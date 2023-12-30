@@ -1,0 +1,2 @@
+This folder contains private_bot_data.py, which contains the bot token and the inivte link. 
+This file is not included in the repository, so you will need to create it yourself.
