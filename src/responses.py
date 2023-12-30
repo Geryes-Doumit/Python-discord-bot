@@ -1,4 +1,3 @@
-import dis
 import random
 from sre_constants import IN
 import discord
@@ -19,9 +18,12 @@ def respond(message:str):
         if word.__len__() < 5:
             continue
         if word.startswith("di") or word.startswith("dy"):
-            return ''.join([i for i in word[2:] if i.isalpha()])
+            return alpha_characters_of(word[2:])
         elif word.startswith("cri"):
-            return ''.join([i for i in word[3:].upper() if i.isalpha()])
+            return alpha_characters_of(word[3:]).upper()
+
+def alpha_characters_of(word:str) -> str:
+    return ''.join([i for i in word if i.isalpha()])
 
 def joke_command():
     response = requests.get("https://official-joke-api.appspot.com/random_joke")
