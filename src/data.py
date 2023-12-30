@@ -1,4 +1,5 @@
-french_insults = ["fdp", "connard", "connasse", 
+french_insults = [
+                  "fdp", "connard", "connasse", 
                   "salope", "pute", "enculé", 
                   "encule", "fils de pute", "tchoin",
                   "batard", "conasse", "bâtard",
@@ -6,7 +7,9 @@ french_insults = ["fdp", "connard", "connasse",
                   "ta gueule", "tg", "ftg", "ntm",
                   "nsm", "nique ta mère", "nique ta mere",
                   "nique sa mere", "nique sa mère", "nique tes morts",
-                  "nique tes mort",]
+                  "nique tes mort", "niquetamere", "niquetamère",
+                  "niquesamere", "niquesamère", "niquetesmorts",
+                 ]
     
 fr_responses_to_insults = [ 
                             "Tu veux te battre ?",

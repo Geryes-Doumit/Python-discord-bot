@@ -9,19 +9,19 @@ def respond(message:str):
     lower_message = message.lower()
     
     for fr_insult in data.french_insults:
-        if fr_insult in lower_message:
+        if fr_insult == lower_message or fr_insult + " " in lower_message or " " + fr_insult in lower_message:
             return data.fr_responses_to_insults[random.randint(0, len(data.fr_responses_to_insults) - 1)]
     
     if "backflip" in lower_message or "back flip" in lower_message:
         return data.backflip_gifs[random.randint(0, len(data.backflip_gifs) - 1)]
     
-    for word in lower_message.split(" "):
+    for word in lower_message.split():
         if word.__len__() < 5:
             continue
         if word.startswith("di") or word.startswith("dy"):
-            return word[2:]
+            return ''.join([i for i in word[2:] if i.isalpha()])
         elif word.startswith("cri"):
-            return word[3:].upper()
+            return ''.join([i for i in word[3:].upper() if i.isalpha()])
 
 def joke_command():
     response = requests.get("https://official-joke-api.appspot.com/random_joke")
