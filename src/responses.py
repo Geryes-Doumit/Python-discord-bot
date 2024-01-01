@@ -7,19 +7,18 @@ import data
 def respond(message:str):
     lower_message = message.lower()
     
-    for fr_insult in data.french_insults:
-        if fr_insult == lower_message or fr_insult + " " in lower_message or " " + fr_insult in lower_message:
-            return data.fr_responses_to_insults[random.randint(0, len(data.fr_responses_to_insults) - 1)]
-    
     if "backflip" in lower_message or "back flip" in lower_message:
         return data.backflip_gifs[random.randint(0, len(data.backflip_gifs) - 1)]
     
     for word in lower_message.split():
+        if word in data.french_insults:
+            return data.fr_responses_to_insults[random.randint(0, len(data.fr_responses_to_insults) - 1)]
+        
         if word.__len__() < 5:
             continue
         if word.startswith("di") or word.startswith("dy"):
             return alpha_characters_of(word[2:])
-        elif word.startswith("cri"):
+        if word.startswith("cri"):
             return alpha_characters_of(word[3:]).upper()
 
 def alpha_characters_of(word:str) -> str:
