@@ -18,7 +18,7 @@ def respond(message:str):
             continue
         if word.startswith("di") or word.startswith("dy"):
             return alpha_characters_of(word[2:])
-        if word.startswith("cri"):
+        if word.startswith("cri") or word.startswith("cry"):
             return alpha_characters_of(word[3:]).upper()
 
 def alpha_characters_of(word:str) -> str:
@@ -42,7 +42,7 @@ def features_command() -> discord.Embed:
     embed.add_field(name=title, value=desc, inline=False)
     
     title = "Cri:"
-    desc = "If a word starts with 'cri', the bot will answer with the rest of the word in uppercase"
+    desc = "If a word starts with 'cri' or 'cry', the bot will answer with the rest of the word in uppercase"
     embed.add_field(name=title, value=desc, inline=False)
     
     title = "Insults:"
