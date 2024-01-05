@@ -26,7 +26,7 @@ def run_bot():
     async def features(interaction):
         await interaction.response.send_message(embed=responses.features_command(interaction.guild))
         
-    @app_commands.command(name="activate",description="Activate a feature")
+    @app_commands.command(name="activate", description="Activates a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
         discord.app_commands.Choice(name="cri", value="cri"),
@@ -36,7 +36,7 @@ def run_bot():
     async def activate(interaction, feature:str):
         await interaction.response.send_message(embed=responses.activate_command(interaction.guild, feature))
         
-    @app_commands.command(name="deactivate",description="Deactivate a feature")
+    @app_commands.command(name="deactivate",description="Deactivates a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
         discord.app_commands.Choice(name="cri", value="cri"),
@@ -49,18 +49,22 @@ def run_bot():
     bot.tree.add_command(activate)
     bot.tree.add_command(deactivate)
     
-    @app_commands.command(name="joke",description="Tell a joke")
+    @app_commands.command(name="joke", description="Sends a joke in the specified language")
     @app_commands.choices(lang=[
-        discord.app_commands.Choice(name="fr", value="fr"),
-        discord.app_commands.Choice(name="en", value="en")
+        discord.app_commands.Choice(name="en", value="en"),
+        discord.app_commands.Choice(name="fr", value="fr")
     ])
     async def joke(interaction, lang:str):
         await interaction.response.send_message(content=await responses.joke_command(lang))
         
     bot.tree.add_command(joke)
     
+    @bot.tree.command(description="Sends a joke in french")
+    async def blague(interaction):
+        await interaction.response.send_message(content=await responses.joke_command("fr"))
+    
     bot.tree.remove_command('help')
-    @bot.tree.command(description="help message")
+    @bot.tree.command(description="Shows the available commands")
     async def help(interaction):
         await interaction.response.send_message(embed=responses.help_command())
 

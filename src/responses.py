@@ -79,16 +79,20 @@ def help_command() -> discord.Embed:
     title =  "Available commands"
     embed = discord.Embed(title=title, color=discord.Color.yellow())
     
-    title = "/joke:" 
-    desc = "The bot will answer with a random joke"
+    title = "/joke [lang]:" 
+    desc = "Answers with a random joke in the specified language"
+    embed.add_field(name=title, value=desc, inline=False)
+    
+    title = "/blague:"
+    desc = "Answers with a random joke in french"
     embed.add_field(name=title, value=desc, inline=False)
     
     title = "/features:"
-    desc = "The bot will answer with a list of all the available features (automatic responses)"
+    desc = "Shows a list of all the available features (automatic responses)"
     embed.add_field(name=title, value=desc, inline=False)
     
     title = "/activate or /deactivate [feature]:"
-    desc = "Activate or deactivate a feature"
+    desc = "Activates or deactivates a feature"
     embed.add_field(name=title, value=desc, inline=False)
     
     title = "/help:"
