@@ -163,3 +163,4 @@ cython_debug/
 # Private bot stuff
 private_bot_data.py
 servers.json
+blague_api*

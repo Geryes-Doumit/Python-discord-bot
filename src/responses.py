@@ -2,6 +2,8 @@ import random
 import discord
 import requests
 import responses_data
+from blagues_api import BlaguesAPI
+from bot_stuff import blague_api_data
 import json
 
 def respond(message:str, guild):
@@ -31,10 +33,16 @@ def alpha_characters_of(word:str) -> str:
 def feature_activated(server_list, guild, feature:str) -> bool:
     return server_list[str(guild.id)][feature]
 
-def joke_command():
-    response = requests.get("https://official-joke-api.appspot.com/random_joke")
-    json = response.json()
-    return json["setup"] + "\n" + json["punchline"]
+async def joke_command(lang:str) -> str:
+    if lang == "fr":
+        blagues = BlaguesAPI(blague_api_data.TOKEN)
+        joke = await blagues.random()
+        return joke.joke + "\n" + joke.answer
+    
+    elif lang == "en":
+        response = requests.get("https://official-joke-api.appspot.com/random_joke")
+        json = response.json()
+        return json["setup"] + "\n" + json["punchline"]
 
 def features_command(guild) -> discord.Embed:
     with open("src/bot_stuff/servers.json", "r") as f:

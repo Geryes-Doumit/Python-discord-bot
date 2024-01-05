@@ -49,9 +49,15 @@ def run_bot():
     bot.tree.add_command(activate)
     bot.tree.add_command(deactivate)
     
-    @bot.tree.command(description="Tell a joke")
-    async def joke(interaction):
-        await interaction.response.send_message(content=responses.joke_command())
+    @app_commands.command(name="joke",description="Tell a joke")
+    @app_commands.choices(lang=[
+        discord.app_commands.Choice(name="fr", value="fr"),
+        discord.app_commands.Choice(name="en", value="en")
+    ])
+    async def joke(interaction, lang:str):
+        await interaction.response.send_message(content=await responses.joke_command(lang))
+        
+    bot.tree.add_command(joke)
     
     bot.tree.remove_command('help')
     @bot.tree.command(description="help message")
