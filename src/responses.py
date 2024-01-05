@@ -56,7 +56,7 @@ def features_command(guild) -> discord.Embed:
     embed.add_field(name=title, value=desc, inline=False)
     
     title = "Insults:" + status_string(server_list[str(guild.id)]["insults"])
-    desc += "If a message contains a french insult, the bot will answer with a random response"
+    desc = "If a message contains a french insult, the bot will answer with a random response"
     embed.add_field(name=title, value=desc, inline=False)
     
     footer = "To activate or deactivate a feature, use the /activate or /deactivate commands"
