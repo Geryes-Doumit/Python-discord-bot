@@ -49,7 +49,7 @@ fr_direct_insults = [
                       "Même Marie n'est pas horny pour toi,",
                       "Faut réévaluer tes choix de vie, t'es en train de te faire insulter par un bot,",
                       "Même Geryes arrêterait de jouer à Spider-man pour se foutre de ta gueule,",
-                      "Sofia t'as déjà bloqué·e alors que tu n'as jamais parlé avec elle,",
+                      "Sofia t'as déjà bloqué alors que tu n'as jamais parlé avec elle,",
                       "Même Isaac a du mal à être sympa avec toi,",
                       "À deux doigts de m'allier avec Chef-Mehmett et te ban du serveur,",
                       "Félix te sortirait le n-word sans hésiter,",
