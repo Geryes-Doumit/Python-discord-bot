@@ -33,3 +33,33 @@ backflip_gifs= [
                 "https://tenor.com/view/flip-yikes-oh-no-accident-back-flip-gif-14246149",
                 "https://tenor.com/view/turn-spin-back-flip-hyped-energetic-gif-16766068",
                ]
+
+fr_direct_insults = [
+                      "Tes parents doivent vraiment être déçus de toi,",
+                      "Avec la tronche que t'as, je pense que tu ferais fortune en tant que bête de foire,",
+                      "Même si tu faisais un backflip, tu ne serais pas stylé,",
+                      "Je n'ai jamais vu un être aussi dénué de style que toi,",
+                      "Tu es le genre de personne qui se fait insulter par un bot,",
+                      "C'est fou comment même moi j'ai pitié de toi,",
+                      "Bip boup, je suis un bot, bip boup nique ta race,",
+                      "C'est à toi que Ruma pense quand elle dit \"je ne suis pas raciste, mais...\",",
+                      "Tu es la preuve que l'évolution est une erreur,",
+                      "Tu es la raison pour laquelle les aliens ne veulent pas nous contacter,",
+                      "Tu es la raison pour laquelle les bombes lacrymogènes ont été inventées,",
+                      "Même Marie n'est pas horny pour toi,",
+                      "Faut réévaluer tes choix de vie, t'es en train de te faire insulter par un bot,",
+                      "Même Geryes arrêterait de jouer à Spider-man pour se foutre de ta gueule,",
+                      "Sofia t'as déjà bloqué·e alors que tu n'as jamais parlé avec elle,",
+                      "Même Isaac a du mal à être sympa avec toi,",
+                      "À deux doigts de m'allier avec Chef-Mehmett et te ban du serveur,",
+                      "Félix te sortirait le n-word sans hésiter,",
+                      "Pierre.A serait prêt à re-transitionner juste pour ne pas être du même genre que toi,",
+                      "Dylan préfèrerait faire un vrai date avec Marie plutôt que de te regarder plus de 10 secondes,",
+                      "C'est \"Casse couille\" qu'on aurait dû écrire sur ton sweat de promo,",
+                      "Quand Thiry nous considérait comme des objets, c'est à toi qu'il parlait,",
+                      "Merci à tous du fond du cœur pour la bonne ambiance de classe, les années que nous passons et les beaux souvenirs que nous nous faisons... sauf toi,",
+                      "Tu devrais rejoindre le club d'échec, son nom représente bien ta vie,",
+                      "Basic n'est pas qu'un langage de programmation ! C'est aussi le niveau scolaire de",
+                      "Je suis sûr que tu es venu au cours de Théorie des langages en pensant que tu allais enfin apprendre à t'exprimer correctement,"
+                      "Tu... Nan, ça vaut même pas la peine de te roaster,",
+                    ]

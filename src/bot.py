@@ -59,6 +59,10 @@ def run_bot():
         
     bot.tree.add_command(joke)
     
+    @bot.tree.command(description="Roast someone")
+    async def roast(interaction, name:str):
+        await interaction.response.send_message(content=responses.roast_command(name))
+    
     @bot.tree.command(description="Sends a joke in french")
     async def blague(interaction):
         await interaction.response.send_message(content=await responses.joke_command("fr"))

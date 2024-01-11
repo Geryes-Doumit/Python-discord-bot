@@ -95,6 +95,10 @@ def help_command() -> discord.Embed:
     desc = "Activates or deactivates a feature"
     embed.add_field(name=title, value=desc, inline=False)
     
+    title = "/roast [name]:"
+    desc = "Roasts the specified person"
+    embed.add_field(name=title, value=desc, inline=False)
+    
     title = "/help:"
     desc = "Shows this message"
     embed.add_field(name=title, value=desc, inline=False)
@@ -136,3 +140,6 @@ def deactivate_command(guild, feature:str):
     embed = discord.Embed(color=discord.Color.yellow())
     embed.add_field(name="Feature deactivated", value=f"The '{feature}' feature has been deactivated for this server", inline=False)
     return embed
+
+def roast_command(name:str) -> str:
+    return responses_data.fr_direct_insults[random.randint(0, len(responses_data.fr_direct_insults) - 1)] + " " + name.split()[0].lower() + "."
