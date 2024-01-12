@@ -1,7 +1,6 @@
 import random
 import discord
 import requests
-import responses_data
 from blagues_api import BlaguesAPI
 from bot_stuff import blague_api_data
 import json
@@ -9,16 +8,20 @@ import json
 def respond(message:str, guild):
     lower_message = message.lower()
     
-    with open("src/bot_stuff/servers.json", "r") as f:
+    with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
     if feature_activated(server_list, guild, "backflip"):
         if "backflip" in lower_message or "back flip" in lower_message:
-            return responses_data.backflip_gifs[random.randint(0, len(responses_data.backflip_gifs) - 1)]
+            backflip_gifs = json.load(open("src/responses_data/backflip_gifs.json", "r", encoding='utf-8'))
+            return backflip_gifs[random.randint(0, len(backflip_gifs) - 1)]
+    
+    french_insults = json.load(open("src/responses_data/fr_insults.json", "r", encoding='utf-8'))
+    fr_responses_to_insults = json.load(open("src/responses_data/fr_responses_to_insults.json", "r", encoding='utf-8'))
     
     for word in lower_message.split():
-        if word in responses_data.french_insults and feature_activated(server_list, guild, "insults"):
-            return responses_data.fr_responses_to_insults[random.randint(0, len(responses_data.fr_responses_to_insults) - 1)]
+        if word in french_insults and feature_activated(server_list, guild, "insults"):
+            return fr_responses_to_insults[random.randint(0, len(fr_responses_to_insults) - 1)]
         
         if word.__len__() < 5:
             continue
@@ -45,7 +48,7 @@ async def joke_command(lang:str) -> str:
         return json["setup"] + "\n" + json["punchline"]
 
 def features_command(guild) -> discord.Embed:
-    with open("src/bot_stuff/servers.json", "r") as f:
+    with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
     title =  "Available features"
@@ -73,7 +76,7 @@ def features_command(guild) -> discord.Embed:
     return embed
 
 def status_string(bool):
-    return "" if bool else "(deactivated)"
+    return "" if bool else " (deactivated)"
 
 def help_command() -> discord.Embed:
     title =  "Available commands"
@@ -106,7 +109,7 @@ def help_command() -> discord.Embed:
     return embed
 
 def activate_command(guild, feature:str):
-    with open("src/bot_stuff/servers.json", "r") as f:
+    with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
     if server_list[str(guild.id)][feature] == True:
@@ -124,7 +127,7 @@ def activate_command(guild, feature:str):
     return embed
 
 def deactivate_command(guild, feature:str):
-    with open("src/bot_stuff/servers.json", "r") as f:
+    with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
     if server_list[str(guild.id)][feature] == False:
@@ -142,4 +145,5 @@ def deactivate_command(guild, feature:str):
     return embed
 
 def roast_command(name:str) -> str:
-    return responses_data.fr_direct_insults[random.randint(0, len(responses_data.fr_direct_insults) - 1)] + " " + name.split()[0].lower() + "."
+    fr_roasts = json.load(open("src/responses_data/fr_roasts.json", "r", encoding='utf-8'))
+    return fr_roasts[random.randint(0, len(fr_roasts) - 1)] + " " + name + "."
