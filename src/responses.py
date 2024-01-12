@@ -16,14 +16,20 @@ def respond(message:str, guild):
             backflip_gifs = json.load(open("src/responses_data/backflip_gifs.json", "r", encoding='utf-8'))
             return backflip_gifs[random.randint(0, len(backflip_gifs) - 1)]
     
-    french_insults = json.load(open("src/responses_data/fr_insults.json", "r", encoding='utf-8'))
+    json_insults = json.load(open("src/responses_data/fr_insults.json", "r", encoding='utf-8'))
+    fr_short_insults = json_insults["single-word-insults"]
+    fr_multiword_insults = json_insults["multi-word-insults"]
     fr_responses_to_insults = json.load(open("src/responses_data/fr_responses_to_insults.json", "r", encoding='utf-8'))
     
+    for insult in fr_multiword_insults:
+        if insult in lower_message and feature_activated(server_list, guild, "insults"):
+            return fr_responses_to_insults[random.randint(0, len(fr_responses_to_insults) - 1)]
+    
     for word in lower_message.split():
-        if word in french_insults and feature_activated(server_list, guild, "insults"):
+        if alpha_characters_of(word) in fr_short_insults and feature_activated(server_list, guild, "insults"):
             return fr_responses_to_insults[random.randint(0, len(fr_responses_to_insults) - 1)]
         
-        if word.__len__() < 5:
+        if alpha_characters_of(word).__len__() < 5:
             continue
         if (word.startswith("di") or word.startswith("dy")) and feature_activated(server_list, guild, "di"):
             return alpha_characters_of(word[2:])

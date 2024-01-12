@@ -1,12 +1,18 @@
-[
-    "fdp", "connard", "connasse", 
-    "salope", "pute", "enculé", 
-    "encule", "fils de pute", "tchoin",
-    "batard", "conasse", "bâtard",
-    "conne", "con", "salop", "saloppe",
-    "ta gueule", "tg", "ftg", "ntm",
-    "nsm", "nique ta mère", "nique ta mere",
-    "nique sa mere", "nique sa mère", "nique tes morts",
-    "nique tes mort", "niquetamere", "niquetamère",
-    "niquesamere", "niquesamère", "niquetesmorts"
-]
+{
+    "single-word-insults": [
+        "fdp", "connard", "connasse", 
+        "salope", "pute", "enculé", 
+        "encule",  "tchoin",
+        "batard", "conasse", "bâtard",
+        "conne", "con", "salop", "saloppe",
+        "tg", "ftg", "ntm",
+        "nsm", "niquetamere", "niquetamère",
+        "niquesamere", "niquesamère", "niquetesmorts"
+    ],
+
+    "multi-word-insults": [
+        "fils de pute", "ta gueule", "nique ta mère",
+        "nique ta mere", "nique sa mere", "nique sa mère", 
+        "nique tes morts"
+    ]
+}
