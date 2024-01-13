@@ -11,7 +11,7 @@ def respond(message:str, guild):
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
-    if feature_activated(server_list, guild, "backflip"):
+    if feature_enabled(server_list, guild, "backflip"):
         if "backflip" in lower_message or "back flip" in lower_message:
             backflip_gifs = json.load(open("src/responses_data/backflip_gifs.json", "r", encoding='utf-8'))
             return backflip_gifs[random.randint(0, len(backflip_gifs) - 1)]
@@ -22,24 +22,24 @@ def respond(message:str, guild):
     fr_responses_to_insults = json.load(open("src/responses_data/fr_responses_to_insults.json", "r", encoding='utf-8'))
     
     for insult in fr_multiword_insults:
-        if insult in lower_message and feature_activated(server_list, guild, "insults"):
+        if insult in lower_message and feature_enabled(server_list, guild, "insults"):
             return fr_responses_to_insults[random.randint(0, len(fr_responses_to_insults) - 1)]
     
     for word in lower_message.split():
-        if alpha_characters_of(word) in fr_short_insults and feature_activated(server_list, guild, "insults"):
+        if alpha_characters_of(word) in fr_short_insults and feature_enabled(server_list, guild, "insults"):
             return fr_responses_to_insults[random.randint(0, len(fr_responses_to_insults) - 1)]
         
         if alpha_characters_of(word).__len__() < 5:
             continue
-        if (word.startswith("di") or word.startswith("dy")) and feature_activated(server_list, guild, "di"):
+        if (word.startswith("di") or word.startswith("dy")) and feature_enabled(server_list, guild, "di"):
             return alpha_characters_of(word[2:])
-        if (word.startswith("cri") or word.startswith("cry")) and feature_activated(server_list, guild, "cri"):
+        if (word.startswith("cri") or word.startswith("cry")) and feature_enabled(server_list, guild, "cri"):
             return alpha_characters_of(word[3:]).upper()
 
 def alpha_characters_of(word:str) -> str:
     return ''.join([i for i in word if i.isalpha()])
 
-def feature_activated(server_list, guild, feature:str) -> bool:
+def feature_enabled(server_list, guild, feature:str) -> bool:
     return server_list[str(guild.id)][feature]
 
 async def joke_command(lang:str) -> str:
@@ -57,7 +57,7 @@ def features_command(guild) -> discord.Embed:
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
-    title =  "Available features"
+    title =  "Available features (automatic responses)"
     embed = discord.Embed(title=title, color=discord.Color.yellow())
     
     title = "Backflip GIFs:" + status_string(server_list[str(guild.id)]["backflip"])
@@ -76,13 +76,13 @@ def features_command(guild) -> discord.Embed:
     desc = "If a message contains a french insult, the bot will answer with a random response"
     embed.add_field(name=title, value=desc, inline=False)
     
-    footer = "To activate or deactivate a feature, use the /activate or /deactivate commands"
+    footer = "To activate or deactivate a feature, use the /enable or /disable commands"
     embed.set_footer(text=footer)
     
     return embed
 
 def status_string(bool):
-    return "" if bool else " (deactivated)"
+    return "" if bool else " (disabled)"
 
 def help_command() -> discord.Embed:
     title =  "Available commands"
@@ -100,7 +100,7 @@ def help_command() -> discord.Embed:
     desc = "Shows a list of all the available features (automatic responses)"
     embed.add_field(name=title, value=desc, inline=False)
     
-    title = "/activate or /deactivate [feature]:"
+    title = "/enable or /disable [feature]:"
     desc = "Activates or deactivates a feature"
     embed.add_field(name=title, value=desc, inline=False)
     
@@ -114,13 +114,13 @@ def help_command() -> discord.Embed:
     
     return embed
 
-def activate_command(guild, feature:str):
+def enable_command(guild, feature:str):
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
     if server_list[str(guild.id)][feature] == True:
         embed = discord.Embed(color=discord.Color.red())
-        embed.add_field(name="Feature already activated", value=f"The '{feature}' feature is already activated for this server", inline=False)
+        embed.add_field(name="Feature already enabled", value=f"The '{feature}' feature is already enabled for this server", inline=False)
         return embed
     
     server_list[str(guild.id)][feature] = True
@@ -129,16 +129,16 @@ def activate_command(guild, feature:str):
         json.dump(server_list, f, indent=4)
         
     embed = discord.Embed(color=discord.Color.green())
-    embed.add_field(name="Feature activated", value=f"The '{feature}' feature has been activated for this server", inline=False)
+    embed.add_field(name="Feature enabled", value=f"The '{feature}' feature has been enabled for this server", inline=False)
     return embed
 
-def deactivate_command(guild, feature:str):
+def disable_command(guild, feature:str):
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
     if server_list[str(guild.id)][feature] == False:
         embed = discord.Embed(color=discord.Color.red())
-        embed.add_field(name="Feature already deactivated", value=f"The '{feature}' feature is already deactivated for this server", inline=False)
+        embed.add_field(name="Feature already disabled", value=f"The '{feature}' feature is already disabled for this server", inline=False)
         return embed
     
     server_list[str(guild.id)][feature] = False
@@ -147,7 +147,7 @@ def deactivate_command(guild, feature:str):
         json.dump(server_list, f, indent=4)
     
     embed = discord.Embed(color=discord.Color.yellow())
-    embed.add_field(name="Feature deactivated", value=f"The '{feature}' feature has been deactivated for this server", inline=False)
+    embed.add_field(name="Feature disabled", value=f"The '{feature}' feature has been disabled for this server", inline=False)
     return embed
 
 def roast_command(name:str) -> str:

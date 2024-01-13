@@ -26,28 +26,28 @@ def run_bot():
     async def features(interaction):
         await interaction.response.send_message(embed=responses.features_command(interaction.guild))
         
-    @app_commands.command(name="activate", description="Activates a feature")
+    @app_commands.command(name="enable", description="enables a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
         discord.app_commands.Choice(name="cri", value="cri"),
         discord.app_commands.Choice(name="backflip", value="backflip"),
         discord.app_commands.Choice(name="insults", value="insults")
     ])
-    async def activate(interaction, feature:str):
-        await interaction.response.send_message(embed=responses.activate_command(interaction.guild, feature))
+    async def enable(interaction, feature:str):
+        await interaction.response.send_message(embed=responses.enable_command(interaction.guild, feature))
         
-    @app_commands.command(name="deactivate",description="Deactivates a feature")
+    @app_commands.command(name="disable",description="disables a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
         discord.app_commands.Choice(name="cri", value="cri"),
         discord.app_commands.Choice(name="backflip", value="backflip"),
         discord.app_commands.Choice(name="insults", value="insults")
     ])
-    async def deactivate(interaction, feature:str):
-        await interaction.response.send_message(embed=responses.deactivate_command(interaction.guild, feature))
+    async def disable(interaction, feature:str):
+        await interaction.response.send_message(embed=responses.disable_command(interaction.guild, feature))
     
-    bot.tree.add_command(activate)
-    bot.tree.add_command(deactivate)
+    bot.tree.add_command(enable)
+    bot.tree.add_command(disable)
     
     @app_commands.command(name="joke", description="Sends a joke in the specified language")
     @app_commands.choices(lang=[
