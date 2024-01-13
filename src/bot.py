@@ -61,6 +61,9 @@ def run_bot():
     
     @bot.tree.command(description="Roast someone")
     async def roast(interaction, name:str):
+        if (name.__len__() > 100):
+            await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
+            return
         await interaction.response.send_message(content=responses.roast_command(name))
     
     @bot.tree.command(description="Sends a joke in french")
