@@ -1,0 +1,26 @@
+roasts_per_server.json is not published on github since it could contain sensitive information. It is used by the bot to send specific roasts to certain servers. 
+It is a json file with the following format:
+
+{
+    "general": [
+        "roast1",
+        "roast2",
+        "roast3",
+        "roast4",
+        "roast5"
+    ],
+    "server_id": [
+        "roast1",
+        "roast2",
+        "roast3",
+        "roast4",
+        "roast5"
+    ],
+    "server_id2": [
+        "roast1",
+        "roast2",
+        "roast3",
+        "roast4",
+        "roast5"
+    ]
+}

@@ -166,6 +166,7 @@ cython_debug/
 # Private bot stuff
 private_bot_data.py
 servers.json
+roasts_per_server.json
 blague_api*
 
 # Other

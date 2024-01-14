@@ -150,6 +150,12 @@ def disable_command(guild, feature:str):
     embed.add_field(name="Feature disabled", value=f"The '{feature}' feature has been disabled for this server", inline=False)
     return embed
 
-def roast_command(name:str) -> str:
-    fr_roasts = json.load(open("src/responses_data/fr_roasts.json", "r", encoding='utf-8'))
-    return fr_roasts[random.randint(0, len(fr_roasts) - 1)] + " " + name + "."
+def roast_command(name:str, guild:discord.guild) -> str:
+    all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
+    
+    try :
+        roasts = all_roasts[str(guild.id)] + all_roasts["general"]
+    except Exception as e:
+        roasts = all_roasts["general"]
+    
+    return roasts[random.randint(0, len(roasts) - 1)] + " " + name + "."

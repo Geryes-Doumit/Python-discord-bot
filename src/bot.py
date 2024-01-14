@@ -59,13 +59,6 @@ def run_bot():
         
     bot.tree.add_command(joke)
     
-    @bot.tree.command(description="Roast someone")
-    async def roast(interaction, name:str):
-        if (name.__len__() > 100):
-            await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
-            return
-        await interaction.response.send_message(content=responses.roast_command(name))
-    
     @bot.tree.command(description="Sends a joke in french")
     async def blague(interaction):
         await interaction.response.send_message(content=await responses.joke_command("fr"))
@@ -74,6 +67,13 @@ def run_bot():
     @bot.tree.command(description="Shows the available commands")
     async def help(interaction):
         await interaction.response.send_message(embed=responses.help_command())
+        
+    @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
+    async def roast(interaction, name:str):
+        if (name.__len__() > 100):
+            await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
+            return
+        await interaction.response.send_message(content=responses.roast_command(name, interaction.guild))
 
     @bot.event
     async def on_ready():
