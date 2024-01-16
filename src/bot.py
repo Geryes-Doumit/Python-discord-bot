@@ -1,8 +1,11 @@
+import datetime
+import os
 from bot_stuff import private_bot_data
 import discord
 from discord import app_commands
 from discord.ext import commands
 import responses
+import edt_command
 import json
 
 async def send_message(message:discord.message, user_message:str):
@@ -74,6 +77,45 @@ def run_bot():
             await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
         await interaction.response.send_message(content=responses.roast_command(name, interaction.guild))
+
+    @app_commands.command(name="edt",description="EDT de la semaine")
+    @app_commands.choices(type=[
+        discord.app_commands.Choice(name="semaine", value="semaine"),
+        discord.app_commands.Choice(name="jour", value="jour"),
+        discord.app_commands.Choice(name="demain", value="demain")
+    ])
+    @app_commands.describe(critere="Le critère de recherche (par défaut: 2ir)",
+                           type="Le type de recherche (par défaut: semaine)",
+                           force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
+    async def edt(interaction, critere:str="2ir", type:str="semaine", force:bool=False):
+        # if interaction.guild.name != "Info & réseaux":
+        #     await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
+        #     return
+        # if "emploi-du-temps" not in interaction.channel.name:
+        #     await interaction.response.send_message(content="This command is only available in the #emploi-du-temps channel.", ephemeral=True)
+        #     return
+        if (critere.__len__() > 20):
+            await interaction.response.send_message(content="You've exceeded the 20-character limit.", ephemeral=True)
+            return
+        
+        await interaction.response.defer()
+
+        img_path = edt_command.take_screenshot(critere, type, force)
+        embed = discord.Embed(title="Emploi du temps · " + type, 
+                              color=discord.Color.blue(), 
+                              url="https://www.emploisdutemps.uha.fr/")
+        
+        try:
+            file = discord.File(img_path, filename="edt.png")
+        except Exception as e:
+            return await interaction.followup.send(content="An error occured. Please try again later.", ephemeral=True)
+        
+        embed.set_image(url="attachment://edt.png")
+        embed.set_footer(text="critère: " + critere + " · le " 
+                         + datetime.datetime.fromtimestamp(os.path.getmtime(img_path)).strftime("%d/%m/%Y à %H:%M:%S"))
+        await interaction.followup.send(embed=embed, file=file)
+    
+    bot.tree.add_command(edt)
 
     @bot.event
     async def on_ready():
