@@ -84,7 +84,7 @@ def features_command(guild) -> discord.Embed:
 def status_string(bool):
     return "" if bool else " (disabled)"
 
-def help_command() -> discord.Embed:
+def help_command(guild) -> discord.Embed:
     title =  "Available commands"
     embed = discord.Embed(title=title, color=discord.Color.yellow())
     
@@ -107,6 +107,11 @@ def help_command() -> discord.Embed:
     title = "/roast [name]:"
     desc = "Roasts the specified person"
     embed.add_field(name=title, value=desc, inline=False)
+    
+    if guild.name == "Info & réseaux":
+        title = "/edt"
+        desc = "Récupère et envoie l'emploi du temps"
+        embed.add_field(name=title, value=desc, inline=False)
     
     title = "/help:"
     desc = "Shows this message"

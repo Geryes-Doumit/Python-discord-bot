@@ -65,11 +65,6 @@ def run_bot():
     @bot.tree.command(description="Sends a joke in french")
     async def blague(interaction):
         await interaction.response.send_message(content=await responses.joke_command("fr"))
-    
-    bot.tree.remove_command('help')
-    @bot.tree.command(description="Shows the available commands")
-    async def help(interaction):
-        await interaction.response.send_message(embed=responses.help_command())
         
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
     async def roast(interaction, name:str):
@@ -116,6 +111,11 @@ def run_bot():
         await interaction.followup.send(embed=embed, file=file)
     
     bot.tree.add_command(edt)
+    
+    bot.tree.remove_command('help')
+    @bot.tree.command(description="Shows the available commands")
+    async def help(interaction):
+        await interaction.response.send_message(embed=responses.help_command(interaction.guild))
 
     @bot.event
     async def on_ready():
