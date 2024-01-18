@@ -68,7 +68,11 @@ def take_screenshot(critere, type, force):
             day_number = datetime.datetime.today().weekday()
             if type=="demain":
                 day_number += 1 % 7
-            current_day = days[day_number] if day_number < 5 else days[4]
+            if day_number == 6:
+                day_number = 0
+            elif day_number == 5:
+                day_number = 4
+            current_day = days[day_number]
             day_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{current_day}')]")
             day_button.click()
             wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-PopupPanel')))
