@@ -28,7 +28,8 @@ def run_bot():
     @bot.tree.command(description="List all the available features")
     async def features(interaction):
         await interaction.response.send_message(embed=responses.features_command(interaction.guild))
-        
+    
+     
     @app_commands.command(name="enable", description="enables a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
@@ -38,7 +39,8 @@ def run_bot():
     ])
     async def enable(interaction, feature:str):
         await interaction.response.send_message(embed=responses.enable_command(interaction.guild, feature))
-        
+    
+    
     @app_commands.command(name="disable",description="disables a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
@@ -52,6 +54,7 @@ def run_bot():
     bot.tree.add_command(enable)
     bot.tree.add_command(disable)
     
+    
     @app_commands.command(name="joke", description="Sends a joke in the specified language")
     @app_commands.choices(lang=[
         discord.app_commands.Choice(name="en", value="en"),
@@ -62,17 +65,20 @@ def run_bot():
         
     bot.tree.add_command(joke)
     
+    
     @bot.tree.command(description="Sends a joke in french")
     async def blague(interaction):
         await interaction.response.send_message(content=await responses.joke_command("fr"))
         
+    
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
     async def roast(interaction, name:str):
         if (name.__len__() > 100):
             await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
         await interaction.response.send_message(content=responses.roast_command(name, interaction.guild))
-
+        
+    
     @app_commands.command(name="edt",description="EDT de la semaine")
     @app_commands.choices(type=[
         discord.app_commands.Choice(name="semaine", value="semaine"),
@@ -96,6 +102,9 @@ def run_bot():
         await interaction.response.defer()
 
         img_path = edt_command.take_screenshot(critere, type, force)
+        if img_path == "samedi" or img_path == "dimanche":
+            return await interaction.followup.send(content=f"Tu demandes l'edt d'un {img_path}, prends ce roast chacal : \n\n"
+                                                   + responses.roast_command(interaction.user.display_name, interaction.guild), ephemeral=True)
         embed = discord.Embed(title="Emploi du temps · " + type, 
                               color=discord.Color.blue(), 
                               url="https://www.emploisdutemps.uha.fr/")
@@ -112,10 +121,12 @@ def run_bot():
     
     bot.tree.add_command(edt)
     
+    
     bot.tree.remove_command('help')
     @bot.tree.command(description="Shows the available commands")
     async def help(interaction):
         await interaction.response.send_message(embed=responses.help_command(interaction.guild))
+
 
     @bot.event
     async def on_ready():
