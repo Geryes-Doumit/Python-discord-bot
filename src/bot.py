@@ -5,6 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import responses
+import face_swap
 import edt_command
 import json
 
@@ -104,7 +105,7 @@ def run_bot():
         img_path = edt_command.take_screenshot(critere, type, force)
         if img_path == "samedi" or img_path == "dimanche":
             return await interaction.followup.send(content=f"Tu demandes l'edt d'un {img_path}, prends ce roast chacal : \n\n"
-                                                   + responses.roast_command(interaction.user.display_name, interaction.guild), ephemeral=True)
+                                                   + responses.roast_command(interaction.user.display_name, interaction.guild))
         embed = discord.Embed(title="Emploi du temps · " + type, 
                               color=discord.Color.blue(), 
                               url="https://www.emploisdutemps.uha.fr/")
@@ -112,7 +113,7 @@ def run_bot():
         try:
             file = discord.File(img_path, filename="edt.png")
         except Exception as e:
-            return await interaction.followup.send(content="An error occured. Please try again later.", ephemeral=True)
+            return await interaction.followup.send(content="An error occured. Please try again later.")
         
         embed.set_image(url="attachment://edt.png")
         embed.set_footer(text="critère: " + critere + " · le " 
@@ -121,6 +122,24 @@ def run_bot():
     
     bot.tree.add_command(edt)
     
+    @app_commands.command(name="heroswap", description="Swap faces with a random hero")
+    @app_commands.choices(hero=[
+        discord.app_commands.Choice(name=file, value=file) for file in os.listdir('img/face_swap')
+    ])
+    async def heroswap(interaction, face:discord.Attachment, hero:str="random"):
+        await interaction.response.defer()
+        try:
+            result_path = await face_swap.swap_faces(face, hero)
+            if result_path == 'noface':
+                return await interaction.followup.send(content="No face found in the image.")
+            
+            result = discord.File(result_path, filename="result.jpg")
+            await interaction.followup.send(file=result)
+        except Exception as e:
+            await interaction.followup.send(content="An error occured. Please try again later.")
+            print(e)
+            
+    bot.tree.add_command(heroswap)
     
     bot.tree.remove_command('help')
     @bot.tree.command(description="Shows the available commands")
