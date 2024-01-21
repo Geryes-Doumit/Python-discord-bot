@@ -90,12 +90,12 @@ def run_bot():
                            type="Le type de recherche (par défaut: semaine)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
     async def edt(interaction, critere:str="2ir", type:str="semaine", force:bool=False):
-        if interaction.guild.name != "Info & réseaux":
-            await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
-            return
-        if "emploi-du-temps" not in interaction.channel.name:
-            await interaction.response.send_message(content="This command is only available in the #emploi-du-temps channel.", ephemeral=True)
-            return
+        # if interaction.guild.name != "Info & réseaux":
+        #     await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
+        #     return
+        # if "emploi-du-temps" not in interaction.channel.name:
+        #     await interaction.response.send_message(content="This command is only available in the #emploi-du-temps channel.", ephemeral=True)
+        #     return
         if (critere.__len__() > 20):
             await interaction.response.send_message(content="You've exceeded the 20-character limit.", ephemeral=True)
             return
@@ -113,6 +113,7 @@ def run_bot():
         try:
             file = discord.File(img_path, filename="edt.png")
         except Exception as e:
+            print(e)
             return await interaction.followup.send(content="An error occured. Please try again later.")
         
         embed.set_image(url="attachment://edt.png")
