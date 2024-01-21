@@ -129,7 +129,7 @@ def run_bot():
     async def heroswap(interaction, face:discord.Attachment, hero:str="random"):
         await interaction.response.defer()
         try:
-            result_path = await face_swap.swap_faces(face, hero)
+            result_path = await face_swap.swap_faces_hero(face, hero)
             if result_path == 'noface':
                 return await interaction.followup.send(content="No face found in the image.")
             
@@ -140,6 +140,22 @@ def run_bot():
             print(e)
             
     bot.tree.add_command(heroswap)
+    
+    @bot.tree.command(description="Put the source face on the target face")
+    async def faceswap(interaction, source:discord.Attachment, target:discord.Attachment):
+        await interaction.response.defer()
+        try:
+            result_path = await face_swap.swap_faces(source, target)
+            if result_path == 'noface_source':
+                return await interaction.followup.send(content="No face found in the source image.")
+            elif result_path == 'noface_target':
+                return await interaction.followup.send(content="No face found in the target image.")
+            
+            result = discord.File(result_path, filename="result.jpg")
+            await interaction.followup.send(file=result)
+        except Exception as e:
+            await interaction.followup.send(content="An error occured. Please try again later.")
+            print(e)
     
     bot.tree.remove_command('help')
     @bot.tree.command(description="Shows the available commands")
