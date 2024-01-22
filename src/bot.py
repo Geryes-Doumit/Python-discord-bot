@@ -26,11 +26,24 @@ def run_bot():
     
     bot = commands.Bot(command_prefix='/', intents=intents)
 
+    # ------------------------------------------------------------------------------------
+    # ------------------------------- Information commands -------------------------------
+    # ------------------------------------------------------------------------------------
+    
     @bot.tree.command(description="List all the available features")
     async def features(interaction):
         await interaction.response.send_message(embed=responses.features_command(interaction.guild))
+        
+    bot.tree.remove_command('help')
+    @bot.tree.command(description="Shows the available commands")
+    async def help(interaction):
+        await interaction.response.send_message(embed=responses.help_command(interaction.guild))
     
-     
+    
+    # ------------------------------------------------------------------------------------
+    # ----------------------------- Functional commands ----------------------------------
+    # ------------------------------------------------------------------------------------
+    
     @app_commands.command(name="enable", description="enables a feature")
     @app_commands.choices(feature=[
         discord.app_commands.Choice(name="di", value="di"),
@@ -40,7 +53,6 @@ def run_bot():
     ])
     async def enable(interaction, feature:str):
         await interaction.response.send_message(embed=responses.enable_command(interaction.guild, feature))
-    
     
     @app_commands.command(name="disable",description="disables a feature")
     @app_commands.choices(feature=[
@@ -55,6 +67,10 @@ def run_bot():
     bot.tree.add_command(enable)
     bot.tree.add_command(disable)
     
+    
+    # ------------------------------------------------------------------------------------
+    # -------------------------------   Jokes and roasts   -------------------------------
+    # ------------------------------------------------------------------------------------
     
     @app_commands.command(name="joke", description="Sends a joke in the specified language")
     @app_commands.choices(lang=[
@@ -71,14 +87,43 @@ def run_bot():
     async def blague(interaction):
         await interaction.response.send_message(content=await responses.joke_command("fr"))
         
-    
+
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
-    async def roast(interaction, name:str):
+    @app_commands.describe(name="The name of the person to roast (can be a mention)",
+                           server_specific="Whether to only include the server-specific roasts or also include the global ones")
+    async def roast(interaction, name:str, server_specific:bool=False):
         if (name.__len__() > 100):
             await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
-        await interaction.response.send_message(content=responses.roast_command(name, interaction.guild))
         
+        roast_result = responses.roast_command(name, interaction.guild, server_specific)
+        content = roast_result[0]
+        roast_index = roast_result[1]
+        is_general = roast_result[2]
+
+        delete_roast_button = DeleteRoastButton(roast_index, interaction.guild, server_specific)
+        view = DisappearingView(timeout=20)
+        if not is_general:
+            view.add_item(delete_roast_button)
+        
+        await interaction.response.send_message(content=content, view=view)
+        view.message = await interaction.original_response()
+        
+    @bot.tree.command(description="Add a roast to the database")
+    @app_commands.describe(roast="The roast to add (must contain '@n', it is where the name will be inserted)")
+    async def addroast(interaction, roast:str):
+        if (roast.__len__() > 300):
+            await interaction.response.send_message(content="A roast cannot be more than 300 characters long.", ephemeral=True)
+            return
+        result = responses.addroast_command(roast, interaction.guild)
+        content = result[0]
+        ephemeral = result[1]
+        await interaction.response.send_message(content=content, ephemeral=ephemeral)
+    
+
+    # ------------------------------------------------------------------------------------
+    # -------------------------------    EDT command   -----------------------------------
+    # ------------------------------------------------------------------------------------
     
     @app_commands.command(name="edt",description="EDT de la semaine")
     @app_commands.choices(type=[
@@ -90,12 +135,10 @@ def run_bot():
                            type="Le type de recherche (par défaut: semaine)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
     async def edt(interaction, critere:str="2ir", type:str="semaine", force:bool=False):
-        # if interaction.guild.name != "Info & réseaux":
-        #     await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
-        #     return
-        # if "emploi-du-temps" not in interaction.channel.name:
-        #     await interaction.response.send_message(content="This command is only available in the #emploi-du-temps channel.", ephemeral=True)
-        #     return
+        if interaction.guild.name != "Info & réseaux":
+            await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
+            return
+        
         if (critere.__len__() > 20):
             await interaction.response.send_message(content="You've exceeded the 20-character limit.", ephemeral=True)
             return
@@ -123,6 +166,11 @@ def run_bot():
     
     bot.tree.add_command(edt)
     
+    
+    # ------------------------------------------------------------------------------------
+    # -------------------------------    Face swap    ------------------------------------
+    # ------------------------------------------------------------------------------------
+    
     @app_commands.command(name="heroswap", description="Swap faces with a random hero")
     @app_commands.choices(hero=[
         discord.app_commands.Choice(name=file, value=file) for file in os.listdir('img/face_swap')
@@ -134,8 +182,13 @@ def run_bot():
             if result_path == 'noface':
                 return await interaction.followup.send(content="No face found in the image.")
             
-            result = discord.File(result_path, filename="result.jpg")
-            await interaction.followup.send(file=result)
+            result = discord.File(result_path, filename="heroswap_result.jpg")
+            delete_button = DeleteFaceSwapButton(interaction)
+            delete_view = DisappearingView(timeout=120)
+            delete_view.add_item(delete_button)
+            
+            await interaction.followup.send(file=result, view=delete_view)
+            delete_view.message = await interaction.original_response()
         except Exception as e:
             await interaction.followup.send(content="An error occured. Please try again later.")
             print(e)
@@ -152,18 +205,22 @@ def run_bot():
             elif result_path == 'noface_target':
                 return await interaction.followup.send(content="No face found in the target image.")
             
-            result = discord.File(result_path, filename="result.jpg")
-            await interaction.followup.send(file=result)
+            result = discord.File(result_path, filename="faceswap_result.jpg")
+            delete_button = DeleteFaceSwapButton(interaction)
+            delete_view = DisappearingView(timeout=120)
+            delete_view.add_item(delete_button)
+            
+            await interaction.followup.send(file=result, view=delete_view)
+            delete_view.message = await interaction.original_response()
         except Exception as e:
             await interaction.followup.send(content="An error occured. Please try again later.")
             print(e)
+
+
+    # ------------------------------------------------------------------------------------
+    # -------------------------------    Bot events    -----------------------------------
+    # ------------------------------------------------------------------------------------
     
-    bot.tree.remove_command('help')
-    @bot.tree.command(description="Shows the available commands")
-    async def help(interaction):
-        await interaction.response.send_message(embed=responses.help_command(interaction.guild))
-
-
     @bot.event
     async def on_ready():
         update_server_list(bot)
@@ -206,3 +263,40 @@ def update_server_list(bot:commands.Bot):
     
     with open(filename, "w") as f:
         json.dump(server_list, f, indent=4)
+        
+
+# ------------------------------------------------------------------------------------
+# -------------------------------    UI classes    -----------------------------------
+# ------------------------------------------------------------------------------------
+
+class DisappearingView(discord.ui.View):
+    def __init__(self, timeout:float=120):
+        super().__init__(timeout=timeout)
+        self.message = None # need to set this ourselves
+        
+    async def on_timeout(self):
+        for child in self.children:
+            self.remove_item(child)
+        await self.message.edit(view=self)
+
+class DeleteFaceSwapButton(discord.ui.Button):
+    def __init__(self, interaction:discord.Interaction):
+        super().__init__(style=discord.ButtonStyle.grey, label="Delete Message")
+        self.interaction = interaction
+        
+    async def callback(self, interaction:discord.Interaction):
+        await interaction.message.delete()
+        
+class DeleteRoastButton(discord.ui.Button):
+    def __init__(self, roastIndex:int, guild:discord.guild, server_specific:bool):
+        super().__init__(style=discord.ButtonStyle.danger, label="Delete Roast")
+        self.roastIndex = roastIndex
+        self.guild = guild
+        self.server_specific = server_specific
+        
+    async def callback(self, interaction:discord.Interaction):
+        await interaction.message.delete()
+        await interaction.response.send_message(
+            content=responses.deleteroast_button_function(self.roastIndex, self.guild, self.server_specific),
+            ephemeral=True
+        )
