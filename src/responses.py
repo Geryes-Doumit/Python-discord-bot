@@ -215,7 +215,7 @@ def deleteroast_button_function(roastIndex:int, guild:discord.guild, server_spec
     with open("src/responses_data/roasts_per_server.json", "w") as f:
         json.dump(all_roasts, f, indent=4)
     
-    return f"Roast '{roast}' deleted" if removed else "Roast not found"
+    return f"Roast `{roast}` deleted" if removed else "Roast not found"
 
 def addroast_command(roast:str, guild:discord.guild, serer_specific=True):
     ephemeral = True
@@ -247,4 +247,4 @@ def addroast_command(roast:str, guild:discord.guild, serer_specific=True):
         json.dump(all_roasts, f, indent=4)
     
     ephemeral = False
-    return f"Roast: '{roast}' added to the {'server' if serer_specific else 'general'} roasts", ephemeral
+    return f"Roast added to the {'server' if serer_specific else 'general'} roasts.```{roast}```", ephemeral
