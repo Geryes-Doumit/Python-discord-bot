@@ -79,7 +79,7 @@ def run_bot():
         discord.app_commands.Choice(name="en", value="en"),
         discord.app_commands.Choice(name="fr", value="fr")
     ])
-    async def joke(interaction, lang:str):
+    async def joke(interaction, lang:str="en"):
         await interaction.response.send_message(content=await responses.joke_command(lang))
         
     bot.tree.add_command(joke)
