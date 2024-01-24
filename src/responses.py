@@ -5,9 +5,17 @@ from blagues_api import BlaguesAPI
 from bot_stuff import blague_api_data
 import json
 
+
+#-----------------------------
+#Automatic responses
+#-----------------------------
+
 def respond(message:str, guild):
     lower_message = message.lower()
     
+    if len(lower_message) > 1000 :
+        return "parlebcp"
+           
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
@@ -41,6 +49,11 @@ def alpha_characters_of(word:str) -> str:
 
 def feature_enabled(server_list, guild, feature:str) -> bool:
     return server_list[str(guild.id)][feature]
+
+
+#-----------------------------
+#Commands
+#-----------------------------
 
 async def joke_command(lang:str) -> str:
     if lang == "fr":
@@ -104,14 +117,30 @@ def help_command(guild) -> discord.Embed:
     desc = "Activates or deactivates a feature"
     embed.add_field(name=title, value=desc, inline=False)
     
-    title = "/roast [name]:"
-    desc = "Roasts the specified person"
+    title = "/roast [name] (server_specific):"
+    desc =  "Roasts the specified person. If the server_specific argument is specified, "
+    desc += "the roast will be chosen randomly from the server roasts, otherwise it will be "
+    desc += "from all the available roasts."
+    embed.add_field(name=title, value=desc, inline=False)
+    
+    title = "/addroast [roast]:"
+    desc =  "Adds a roast to the server roasts (server_specific). The roast must contain '@n' to specify "
+    desc += "where the name of the person to roast goes."
     embed.add_field(name=title, value=desc, inline=False)
     
     if guild.name == "Info & réseaux":
         title = "/edt"
         desc = "Récupère et envoie l'emploi du temps"
         embed.add_field(name=title, value=desc, inline=False)
+        
+    title = "/heroswap [face] (hero):"
+    desc =  "Swaps the face of the image with the face of the specified hero. "
+    desc += "If no hero is specified, the bot will choose a random hero."
+    embed.add_field(name=title, value=desc, inline=False)
+    
+    title = "/faceswap [source] [target]:"
+    desc =  "Puts the source face on the target face."
+    embed.add_field(name=title, value=desc, inline=False)
     
     title = "/help:"
     desc = "Shows this message"
@@ -155,12 +184,86 @@ def disable_command(guild, feature:str):
     embed.add_field(name="Feature disabled", value=f"The '{feature}' feature has been disabled for this server", inline=False)
     return embed
 
-def roast_command(name:str, guild:discord.guild) -> str:
+def roast_command(name:str, guild:discord.guild, server_specific, roastIndex=-1) -> str:
     all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
+    general_roasts = all_roasts["general"]
+    roasts = []
     
     try :
-        roasts = all_roasts[str(guild.id)] + all_roasts["general"]
-    except Exception as e:
-        roasts = all_roasts["general"]
+        
+        if not server_specific:
+            roasts += general_roasts
+        
+        roasts += all_roasts[str(guild.id)] 
+        
+    except Exception :
+        roasts += general_roasts
     
-    return roasts[random.randint(0, len(roasts) - 1)] + " " + name + "."
+    if roastIndex > len(roasts) - 1:
+        return f"Roast index out of range (max: {len(roasts) - 1})"
+    
+    index = random.randint(0, len(roasts) - 1) if roastIndex < 0 else roastIndex
+    roast = roasts[index]
+    return roast.replace("@n", name), index, roast in general_roasts
+
+def deleteroast_button_function(roastIndex:int, guild:discord.guild, server_specific):
+    all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
+    
+    roasts = []
+    
+    if not server_specific:
+        roasts += all_roasts["general"]
+    
+    try :
+        roasts += all_roasts[str(guild.id)]
+    except Exception:
+        pass
+    
+    try :
+        roast = roasts[roastIndex]
+        print('Removing roast: ' + roast)
+        all_roasts[str(guild.id)].remove(roast)
+        
+        if len(all_roasts[str(guild.id)]) == 0:
+            del all_roasts[str(guild.id)]
+        
+        removed = True
+    except Exception:
+        removed = False
+    
+    with open("src/responses_data/roasts_per_server.json", "w") as f:
+        json.dump(all_roasts, f, indent=4)
+    
+    return f"Roast `{roast}` deleted" if removed else "Roast not found"
+
+def addroast_command(roast:str, guild:discord.guild, serer_specific=True):
+    ephemeral = True
+    if not roast.__contains__('@n'):
+        return "Roasts must contain '@n' to specify where the name of the person to roast goes", ephemeral
+    
+    all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
+    
+    if not serer_specific and roast in all_roasts["general"]:
+        return "This roast is already in the general roasts", ephemeral
+    
+    try :
+        if serer_specific and roast in all_roasts[str(guild.id)]:
+            return "This roast is already in the server roasts", ephemeral
+    except Exception:
+        pass
+    
+    try :
+        if serer_specific:
+            all_roasts[str(guild.id)].append(roast)
+        else:
+            all_roasts["general"].append(roast)
+    
+    except Exception: # if the server doesn't have a list of roasts yet
+        if serer_specific:
+            all_roasts[str(guild.id)] = [roast]
+        
+    with open("src/responses_data/roasts_per_server.json", "w") as f:
+        json.dump(all_roasts, f, indent=4)
+    
+    ephemeral = False
+    return f"Roast added to the {'server' if serer_specific else 'general'} roasts.```{roast}```", ephemeral
