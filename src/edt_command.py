@@ -50,7 +50,7 @@ def take_screenshot(critere, type, force):
         
         # Find the element with the id 'username'
         username_field = driver.find_element(by='id', value='username')
-        username_field.send_keys('geryes.doumit@uha.fr')
+        username_field.send_keys(email)
         
         # Find the element with the id 'password'
         password_field = driver.find_element(by='id', value='password')
