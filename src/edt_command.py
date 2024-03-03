@@ -37,7 +37,7 @@ def take_screenshot(critere, type, force):
     
     # Set up the Selenium webdriver
     options = webdriver.ChromeOptions()
-    # options.add_argument('headless')
+    options.add_argument('headless')
     options.add_argument("disable-gpu")
     options.add_argument('window-size=1600x1080') if type=="semaine" \
                                                   else options.add_argument('window-size=900x900')
