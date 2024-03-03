@@ -12,9 +12,6 @@ import json
 
 def respond(message:str, guild):
     lower_message = message.lower()
-    
-    if len(lower_message) > 1000 :
-        return "parlebcp"
            
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)

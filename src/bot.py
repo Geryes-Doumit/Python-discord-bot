@@ -106,7 +106,8 @@ def run_bot():
         delete_roast_button = DeleteRoastButton(roast_index, interaction.guild, server_specific)
         view = DisappearingView(timeout=20)
         if not is_general:
-            view.add_item(delete_roast_button)
+            # view.add_item(delete_roast_button)
+            pass
         
         await interaction.response.send_message(content=content, view=view)
         view.message = await interaction.original_response()
@@ -297,8 +298,9 @@ class DeleteRoastButton(discord.ui.Button):
         self.server_specific = server_specific
         
     async def callback(self, interaction:discord.Interaction):
-        await interaction.message.delete()
-        await interaction.response.send_message(
-            content=responses.deleteroast_button_function(self.roastIndex, self.guild, self.server_specific),
-            ephemeral=True
-        )
+        await interaction.message.edit(
+                        view=None,
+                        content=responses.deleteroast_button_function(self.roastIndex, self.guild, self.server_specific),
+                        ephemeral=True
+            )
+        

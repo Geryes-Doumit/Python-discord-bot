@@ -37,7 +37,7 @@ def take_screenshot(critere, type, force):
     
     # Set up the Selenium webdriver
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
+    # options.add_argument('headless')
     options.add_argument("disable-gpu")
     options.add_argument('window-size=1600x1080') if type=="semaine" \
                                                   else options.add_argument('window-size=900x900')
@@ -69,7 +69,7 @@ def take_screenshot(critere, type, force):
         search_button.click()
         
         # Wait until the events are loaded
-        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'eventText')))
+        wait.until(EC.visibility_of_element_located((By.CLASS_NAME, 'grilleData')))
         
         if type=="jour" or type=="demain":
             if day_number == 7:
@@ -101,8 +101,12 @@ def click_next_week(day_number, wait, driver):
     next_week_number = str(int(datetime.datetime.today().strftime("%W")) + 1)
     next_month_number = int(((datetime.datetime.today()) + datetime.timedelta(days=(7-day_number))).strftime("%m"))
     year = datetime.datetime.today().strftime("%Y")
-    button_text = f"S{next_week_number} - lun. {next_monday_number} {months[next_month_number-1]} {year}"
+    formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
+    button_text = f"S{next_week_number} - lun. {formatted_next_monday} {months[next_month_number-1]} {year}"
     print(button_text)
-    next_week_monday_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{button_text}')]")
-    next_week_monday_button.click()
+    try:
+        next_week_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{button_text}')]")
+        next_week_button.click()
+    except Exception:
+        print("No next week button found")
     wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-PopupPanel')))

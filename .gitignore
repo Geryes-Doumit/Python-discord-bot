@@ -170,6 +170,7 @@ roasts_per_server.json
 credentials.py
 img/*
 blague_api*
+dev_test
 
 # Other
 .tmp*
