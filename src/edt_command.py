@@ -99,8 +99,8 @@ def take_screenshot(critere, type, force):
 def click_next_week(day_number, wait, driver):
     next_monday_number = str(int(datetime.datetime.today().strftime("%d")) + 7 - day_number)
     next_week_number = str(int(datetime.datetime.today().strftime("%W")) + 1)
-    next_month_number = int(((datetime.datetime.today()) + datetime.timedelta(days=(7-day_number))).strftime("%m"))
-    year = datetime.datetime.today().strftime("%Y")
+    next_month_number = int((datetime.datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%m"))
+    year = str(int((datetime.datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%Y")))
     formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
     button_text = f"S{next_week_number} - lun. {formatted_next_monday} {months[next_month_number-1]} {year}"
     print(button_text)
