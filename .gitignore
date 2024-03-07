@@ -171,6 +171,7 @@ credentials.py
 img/*
 blague_api*
 dev_test
+googleapi/*.json
 
 # Other
 .tmp*

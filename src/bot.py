@@ -7,6 +7,7 @@ from discord.ext import commands
 import responses
 import face_swap
 import edt_command
+import profedt_command
 import json
 
 async def send_message(message:discord.message, user_message:str):
@@ -138,9 +139,9 @@ def run_bot():
                            type="Le type de recherche (par défaut: semaine)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
     async def edt(interaction, critere:str="2ir", type:str="semaine", force:bool=False):
-        if interaction.guild.name != "Info & réseaux":
-            await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
-            return
+        # if interaction.guild.name != "Info & réseaux":
+        #     await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
+        #     return
         
         if (critere.__len__() > 20):
             await interaction.response.send_message(content="You've exceeded the 20-character limit.", ephemeral=True)
@@ -164,11 +165,24 @@ def run_bot():
         
         embed.set_image(url="attachment://edt.png")
         embed.set_footer(text="critère: " + critere + " · le " 
-                         + datetime.datetime.fromtimestamp(os.path.getmtime(img_path)).strftime("%d/%m/%Y à %H:%M:%S"))
+                         + datetime.datetime.fromtimestamp(os.path.getmtime(img_path)).strftime("%d/%m/%Y à %H:%M"))
         await interaction.followup.send(embed=embed, file=file)
     
     bot.tree.add_command(edt)
     
+    @bot.tree.command(description="EDT d'un professeur")
+    async def profedt(interaction, name:str):
+        # if interaction.guild.name != "Info & réseaux":
+        #     await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
+        #     return
+        
+        if (name.__len__() > 100):
+            await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
+            return
+        
+        await interaction.response.defer()
+        embed = profedt_command.profedt(name)
+        await interaction.followup.send(embed=embed)
     
     # ------------------------------------------------------------------------------------
     # -------------------------------    Face swap    ------------------------------------

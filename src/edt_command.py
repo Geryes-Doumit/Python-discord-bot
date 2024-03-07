@@ -17,15 +17,21 @@ def take_screenshot(critere, type, force):
         
     screenshot_path = f'./img/edt_{critere}_{type}.png'
     
+    # Remove old screenshots
     try:
         for file in os.listdir('./img'):
-            if file.startswith('edt') and file.endswith('.png') and time.time() - os.path.getmtime(screenshot_path) > 600: # 10 minutes
+            if file.startswith('edt') and file.endswith('.png') and (time.time() - os.path.getmtime(screenshot_path)) > 600: # 10 minutes
                 print(f'Removing {file}')
                 os.remove(f'./img/{file}')
-        
-        if not force and time.time() - os.path.getmtime(screenshot_path) < 600: # 10 minutes
-            return screenshot_path
     except Exception as e:
+        print(e)
+        pass
+    
+    # Check if the screenshot was taken less than 10 minutes ago
+    try:
+        if not force and (time.time() - os.path.getmtime(screenshot_path)) < 600: # 10 minutes
+            return screenshot_path
+    except Exception:
         pass
     
     day_number = datetime.datetime.today().weekday()
