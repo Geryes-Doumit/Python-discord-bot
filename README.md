@@ -30,7 +30,7 @@ Puts the source face on the target face.
       <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/cbed0c84-165a-43da-a29b-a3372718c50d" width="400"/>
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/f23bf3d8-7af1-42e2-baab-a0f0b3a11eac" height="308"/>
+      <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/f23bf3d8-7af1-42e2-baab-a0f0b3a11eac" width="240"/>
     </td>
   </tr>
 </table>
@@ -60,7 +60,7 @@ Sends the schedule of the corresponding teacher.
       <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/49a69735-7e05-4a94-b256-c4e7fad9b06a" width="500"/>
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/a80417a1-a0c2-4f28-8fad-c8cbc880bfb2" height="308"/>
+      <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/a80417a1-a0c2-4f28-8fad-c8cbc880bfb2" width="200"/>
     </td>
   </tr>
 </table>
