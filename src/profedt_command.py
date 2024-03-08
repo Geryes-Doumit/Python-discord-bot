@@ -84,10 +84,17 @@ def profedt(name)->discord.Embed:
         description = str(event['description']).strip()
         description = re.sub(r'\(Exporté.*[0-9]\)\n?', '', description)
         
-        embed_desc = event_name + ", " + event_duration + "\n" \
-                + location + "\n" \
+        embed_desc = "> " + event_name + ", " + event_duration + "\n> " \
+                + location + "\n> " \
                 + description.replace("\n", ", ").removesuffix(', ') + "\n"
-        embed.add_field(name=date_to_show, value=embed_desc, inline=False)
+        
+        try:
+          if date_to_show in embed.fields[-1].name:
+              embed.set_field_at(-1, name=date_to_show, value=embed.fields[-1].value + "\n" + embed_desc, inline=False)
+          else:
+            embed.add_field(name=date_to_show, value=embed_desc, inline=False)
+        except:
+          embed.add_field(name=date_to_show, value=embed_desc, inline=False)
         
     embed.set_footer(text="Emploi du temps des 7 prochains jours.\nCritère de recherche: '" + name + "' · le " + datetime.datetime.now().strftime("%d/%m/%Y à %H:%M"))
     
