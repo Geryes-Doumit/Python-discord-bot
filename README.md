@@ -7,10 +7,10 @@ A fun discord bot coded in python. It has multiple features and quirky responses
 
 ## Fun commands
 `/joke [lang]:`
-Answers with a random joke in the specified language
+Answers with a random joke in the specified language.
 
 `/blague`:
-Answers with a random joke in french
+Answers with a random joke in french.
 
 `/roast [name] (server_specific)`: 
 Roasts the specified person. If the server_specific argument is set to True, the roast will be chosen randomly from the server roasts, otherwise it will be from all the available roasts.
@@ -44,7 +44,7 @@ Shows a list of all the available features (automatic responses).
 Activates or deactivates a feature.
 
 `/help`: 
-Shows the list of available commands
+Shows the list of available commands.
 
 ## My class' specific commands
 These commands are only available in a personal server.
@@ -70,18 +70,18 @@ Sends the schedule of the corresponding teacher.
 The bot analyses every message sent in a server and answers specific ones if the automatic response is enabled for the server.
 
 > **Backflip GIFs:** <br/>
-> When a message contains 'backflip', the bot will respond with a backflip GIF
+> When a message contains 'backflip', the bot will respond with a backflip GIF.
 
 > **Di:** <br/>
-> If a word starts with 'di' or 'dy', the bot will answer with the rest of the word
+> If a word starts with 'di' or 'dy', the bot will answer with the rest of the word.
 
 > **Cri:** <br/>
-> If a word starts with 'cri' or 'cry', the bot will answer with the rest of the word in uppercase
+> If a word starts with 'cri' or 'cry', the bot will answer with the rest of the word in uppercase.
 
 > **Insults:** <br/>
-> If a message contains a french insult, the bot will answer with a random response
+> If a message contains a french insult, the bot will answer with a random response.
 
-To activate or deactivate a feature, use the `/enable` or `/disable` commands
+To activate or deactivate a feature, use the `/enable` or `/disable` commands.
 
 ##
 <footer>
