@@ -6,7 +6,7 @@ A fun discord bot coded in python. It has multiple features and quirky responses
 </p>
 
 ## Fun commands
-`/joke [lang]:`
+`/joke [lang]`:
 Answers with a random joke in the specified language.
 
 `/blague`:
