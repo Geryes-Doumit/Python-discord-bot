@@ -14,6 +14,7 @@ def get_random_meme():
         with open(filepath, "wb") as f:
             f.write(image_response.content)
             
+        print("Got meme from " + image_url)
         return filepath
     
     except Exception as e:
