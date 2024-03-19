@@ -12,6 +12,9 @@ Answers with a random joke in the specified language.
 `/blague`:
 Answers with a random joke in french.
 
+`/meme`:
+Sends a random meme using [meme-api](https://github.com/D3vd/Meme_Api).
+
 `/roast [name] (server_specific)`: 
 Roasts the specified person. If the server_specific argument is set to True, the roast will be chosen randomly from the server roasts, otherwise it will be from all the available roasts.
 
@@ -52,8 +55,8 @@ These commands are only available in a personal server.
 `/edt [...]`: 
 Captures and sends a screenshot of our schedule for the week.
 
-`/profedt [name]`: 
-Sends the schedule of the corresponding teacher. 
+`/profedt [name] (days)`: 
+Sends the schedule of the corresponding teacher, 'days' is set to 7 by default.
 <table align="center">
   <tr>
     <td width="50%" align="center">
