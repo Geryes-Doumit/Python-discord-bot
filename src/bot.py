@@ -8,6 +8,7 @@ import responses
 import face_swap
 import edt_command
 import profedt_command
+import meme_command
 import json
 
 async def send_message(message:discord.message, user_message:str):
@@ -90,6 +91,20 @@ def run_bot():
     async def blague(interaction):
         await interaction.response.send_message(content=await responses.joke_command("fr"))
         
+        
+    @bot.tree.command(description="Sends a random meme")
+    async def meme(interaction):
+        image_path = meme_command.get_random_meme()
+        
+        if image_path == "error":
+            return await interaction.response.send_message(content="An error occured. Please try again later.")
+        try:
+            file = discord.File(image_path, filename=image_path)
+            return await interaction.response.send_message(file=file)
+        except Exception as e:
+            print(e)
+            return await interaction.response.send_message(content="An error occured. Please try again later.")
+        
 
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
     @app_commands.describe(name="The name of the person to roast (can be a mention)",
@@ -171,7 +186,7 @@ def run_bot():
     bot.tree.add_command(edt)
     
     @bot.tree.command(description="EDT d'un professeur")
-    async def profedt(interaction, name:str):
+    async def profedt(interaction, name:str, jours:int=7):
         if interaction.guild.name != "Info & réseaux":
             await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
             return
@@ -180,8 +195,12 @@ def run_bot():
             await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
         
+        if jours < 1 or jours > 100:
+            await interaction.response.send_message(content="The number of days must be between 1 and 100.", ephemeral=True)
+            return
+        
         await interaction.response.defer()
-        embed = profedt_command.profedt(name)
+        embed = profedt_command.profedt(name, jours)
         await interaction.followup.send(embed=embed)
     
     # ------------------------------------------------------------------------------------
