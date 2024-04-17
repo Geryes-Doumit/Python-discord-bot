@@ -94,6 +94,7 @@ def run_bot():
         
     @bot.tree.command(description="Sends a random meme")
     async def meme(interaction):
+        interaction.response.defer()
         image_path = meme_command.get_random_meme()
         
         if image_path == "error":
@@ -232,10 +233,10 @@ def run_bot():
     bot.tree.add_command(heroswap)
     
     @bot.tree.command(description="Put the source face on the target face")
-    async def faceswap(interaction, source:discord.Attachment, target:discord.Attachment):
+    async def faceswap(interaction, source:discord.Attachment, target:discord.Attachment, replace_all:bool=False):
         await interaction.response.defer()
         try:
-            result_path = await face_swap.swap_faces(source, target)
+            result_path = await face_swap.swap_faces(source, target, replace_all)
             if result_path == 'noface_source':
                 return await interaction.followup.send(content="No face found in the source image.")
             elif result_path == 'noface_target':
@@ -292,10 +293,10 @@ def update_server_list(bot:commands.Bot):
             print(f"Adding {guild.name} to the server list")
             server_list[str(guild.id)] = {}
             server_list[str(guild.id)]["server_name"] = guild.name
-            server_list[str(guild.id)]["di"] = True
-            server_list[str(guild.id)]["cri"] = True
+            server_list[str(guild.id)]["di"] = False
+            server_list[str(guild.id)]["cri"] = False
             server_list[str(guild.id)]["backflip"] = True
-            server_list[str(guild.id)]["insults"] = True
+            server_list[str(guild.id)]["insults"] = False
     
     with open(filename, "w") as f:
         json.dump(server_list, f, indent=4)
