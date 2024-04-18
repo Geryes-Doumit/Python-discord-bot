@@ -168,10 +168,10 @@ private_bot_data.py
 servers.json
 roasts_per_server.json
 credentials.py
-img/edt*
+img/edt/*
 img/face_swap*
-img/meme
-img/meme/monkey
+img/meme/random*
+img/meme/monkey/random*
 blague_api*
 dev_test
 googleapi/*.json
