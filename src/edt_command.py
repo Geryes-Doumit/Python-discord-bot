@@ -1,6 +1,5 @@
-import datetime
+from datetime import datetime, timedelta
 import os
-import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,26 +14,36 @@ def take_screenshot(critere, type, force):
     if '/' in critere:
         critere = critere.replace('/', '-')
         
-    screenshot_path = f'./img/edt_{critere}_{type}.png'
+    screenshot_path = f'./img/edt/edt_{critere}_{type}.png'
     
     # Remove old screenshots
     try:
-        for file in os.listdir('./img'):
-            if file.startswith('edt') and file.endswith('.png') and (time.time() - os.path.getmtime(screenshot_path)) > 600: # 10 minutes
+        edt_images = os.listdir('./img/edt')
+        for file in edt_images:
+            diff = (
+                datetime.now() - datetime.fromtimestamp(os.path.getmtime(f'./img/edt/{file}'))
+            )
+            # If file older than 10 minutes ago
+            if diff > timedelta(minutes=10): 
                 print(f'Removing {file}')
-                os.remove(f'./img/{file}')
+                os.remove(f'./img/edt/{file}')
+
     except Exception as e:
         print(e)
         pass
     
     # Check if the screenshot was taken less than 10 minutes ago
     try:
-        if not force and (time.time() - os.path.getmtime(screenshot_path)) < 600: # 10 minutes
+        diff = (
+            datetime.now() - datetime.fromtimestamp(os.path.getmtime(screenshot_path))
+        )
+        if not force and diff < timedelta(minutes=10): # 10 minutes
             return screenshot_path
-    except Exception:
+    except Exception as e:
+        print(e)
         pass
     
-    day_number = datetime.datetime.today().weekday()
+    day_number = datetime.today().weekday()
     if type=="demain":
         day_number += 1
     
@@ -103,10 +112,10 @@ def take_screenshot(critere, type, force):
         return screenshot_path
     
 def click_next_week(day_number, wait, driver):
-    next_monday_number = str(int(datetime.datetime.today().strftime("%d")) + 7 - day_number)
-    next_week_number = str(int(datetime.datetime.today().strftime("%W")) + 1)
-    next_month_number = int((datetime.datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%m"))
-    year = str(int((datetime.datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%Y")))
+    next_monday_number = str(int(datetime.today().strftime("%d")) + 7 - day_number)
+    next_week_number = str(int(datetime.today().strftime("%W")) + 1)
+    next_month_number = int((datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%m"))
+    year = str(int((datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%Y")))
     formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
     button_text = f"S{next_week_number} - lun. {formatted_next_monday} {months[next_month_number-1]} {year}"
     print(button_text)
