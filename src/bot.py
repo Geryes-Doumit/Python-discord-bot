@@ -94,17 +94,17 @@ def run_bot():
         
     @bot.tree.command(description="Sends a random meme")
     async def meme(interaction):
-        interaction.response.defer()
+        await interaction.response.defer()
         image_path = meme_command.get_random_meme()
         
         if image_path == "error":
-            return await interaction.response.send_message(content="An error occured. Please try again later.")
+            return await interaction.followup.send(content="An error occured. Please try again later.")
         try:
             file = discord.File(image_path, filename=image_path)
-            return await interaction.response.send_message(file=file)
+            return await interaction.followup.send(file=file)
         except Exception as e:
             print(e)
-            return await interaction.response.send_message(content="An error occured. Please try again later.")
+            return await interaction.followup.send(content="An error occured. Please try again later.")
         
 
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")

@@ -170,6 +170,7 @@ roasts_per_server.json
 credentials.py
 img/*.png
 img/*.jpg
+img/random_meme*
 blague_api*
 dev_test
 googleapi/*.json
