@@ -1,7 +1,7 @@
 import requests
 
 def get_random_meme():
-    filepath = "img/random_meme."
+    filepath = "img/meme/random_meme."
     extension = "null"
     k = 0
     max_tries = 10
@@ -30,6 +30,21 @@ def get_random_meme():
             f.write(image_response.content)
             
         print("Got meme from " + image_url)
+        return filepath
+    
+    except Exception as e:
+        print(e)
+        return "error"
+    
+def get_random_monkey():
+    filepath = "img/meme/monkey/random_monkey.png"
+    try:
+        image_response = requests.get("https://www.placemonkeys.com/1200/900?random")
+        
+        with open(filepath, "wb") as f:
+            f.write(image_response.content)
+            
+        print("Got the monkey ;)")
         return filepath
     
     except Exception as e:

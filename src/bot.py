@@ -73,7 +73,7 @@ def run_bot():
     
     
     # ------------------------------------------------------------------------------------
-    # -------------------------------   Jokes and roasts   -------------------------------
+    # -------------------------------     Fun commands     -------------------------------
     # ------------------------------------------------------------------------------------
     
     @app_commands.command(name="joke", description="Sends a joke in the specified language")
@@ -106,6 +106,20 @@ def run_bot():
             print(e)
             return await interaction.followup.send(content="An error occured. Please try again later.")
         
+    @bot.tree.command(description="Sends a random picture of a monkey")
+    async def monkey(interaction):
+        await interaction.response.defer()
+        image_path = meme_command.get_random_monkey()
+        
+        if image_path == "error":
+            return await interaction.followup.send(content="An error occured. Please try again later.")
+        try:
+            file = discord.File(image_path, filename=image_path)
+            return await interaction.followup.send(file=file)
+        except Exception as e:
+            print(e)
+            return await interaction.followup.send(content="An error occured. Please try again later.")
+        
 
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
     @app_commands.describe(name="The name of the person to roast (can be a mention)",
@@ -120,7 +134,7 @@ def run_bot():
         roast_index = roast_result[1]
         is_general = roast_result[2]
 
-        delete_roast_button = DeleteRoastButton(roast_index, interaction.guild, server_specific)
+        # delete_roast_button = DeleteRoastButton(roast_index, interaction.guild, server_specific)
         view = DisappearingView(timeout=20)
         if not is_general:
             # view.add_item(delete_roast_button)
@@ -210,7 +224,7 @@ def run_bot():
     
     @app_commands.command(name="heroswap", description="Swaps the face of the image with the face of a hero")
     @app_commands.choices(hero=[
-        discord.app_commands.Choice(name=file, value=file) for file in os.listdir('img/face_swap')
+        discord.app_commands.Choice(name=file, value=file) for file in os.listdir('img/hero_swap')
     ])
     async def heroswap(interaction, face:discord.Attachment, hero:str="random"):
         await interaction.response.defer()

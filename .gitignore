@@ -168,9 +168,9 @@ private_bot_data.py
 servers.json
 roasts_per_server.json
 credentials.py
-img/*.png
-img/*.jpg
-img/random_meme*
+img/edt*
+img/face_swap*
+img/*/random_*
 blague_api*
 dev_test
 googleapi/*.json

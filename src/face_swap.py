@@ -32,15 +32,15 @@ async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
     swapper = insightface.model_zoo.get_model(os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx')
     
     if hero_choice == "random":
-        face_swap_images = os.listdir('img/face_swap')
-        hero = cv2.imread('img/face_swap/' + random.choice(face_swap_images))
+        face_swap_images = os.listdir('img/hero_swap')
+        hero = cv2.imread('img/hero_swap/' + random.choice(face_swap_images))
     else:
-        hero = cv2.imread('img/face_swap/' + hero_choice)
+        hero = cv2.imread('img/hero_swap/' + hero_choice)
     result = hero.copy()
     face_hero = app.get(hero)[0]
     result = swapper.get(result, face_hero, face_img, paste_back=True)
     tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-    tosave.save('img/face_swap_result.jpg')
+    tosave.save('img/hero_swap_result.jpg')
     
     return 'img/face_swap_result.jpg'
 
@@ -97,11 +97,11 @@ async def swap_faces(source:discord.Attachment, target:discord.Attachment, repla
     print('Saving image...')
     
     tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-    tosave.save('img/face_swap_result.jpg')
+    tosave.save('img/hero_swap_result.jpg')
     
     print('Done.')
     
-    return 'img/face_swap_result.jpg'
+    return 'img/hero_swap_result.jpg'
 
 async def get_data_from_url(url):
         
