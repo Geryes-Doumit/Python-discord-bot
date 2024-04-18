@@ -39,7 +39,7 @@ def get_random_meme():
 def get_random_monkey():
     filepath = "img/meme/monkey/random_monkey.png"
     try:
-        image_response = requests.get("https://www.placemonkeys.com/1200/900?random")
+        image_response = requests.get("https://www.placemonkeys.com/900/900?random")
         
         with open(filepath, "wb") as f:
             f.write(image_response.content)
