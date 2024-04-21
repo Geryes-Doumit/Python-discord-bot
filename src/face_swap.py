@@ -40,7 +40,7 @@ async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
     face_hero = app.get(hero)[0]
     result = swapper.get(result, face_hero, face_img, paste_back=True)
     tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-    tosave.save('img/hero_swap_result.jpg')
+    tosave.save('img/face_swap_result.jpg')
     
     return 'img/face_swap_result.jpg'
 
@@ -97,11 +97,11 @@ async def swap_faces(source:discord.Attachment, target:discord.Attachment, repla
     print('Saving image...')
     
     tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
-    tosave.save('img/hero_swap_result.jpg')
+    tosave.save('img/face_swap_result.jpg')
     
     print('Done.')
     
-    return 'img/hero_swap_result.jpg'
+    return 'img/face_swap_result.jpg'
 
 async def get_data_from_url(url):
         
