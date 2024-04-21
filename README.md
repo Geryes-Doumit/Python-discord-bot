@@ -15,6 +15,9 @@ Answers with a random joke in french.
 `/meme`:
 Sends a random meme using [meme-api](https://github.com/D3vd/Meme_Api).
 
+`/monkey`:
+Sends a random image of a monkey using [placemonkeys.com](https://www.placemonkeys.com/).
+
 `/roast [name] (server_specific)`: 
 Roasts the specified person. If the server_specific argument is set to True, the roast will be chosen randomly from the server roasts, otherwise it will be from all the available roasts.
 
@@ -39,7 +42,7 @@ Puts the source face on the target face.
 </table>
 <p align="center">Faceswap examples</p>
 
-## Informational commands
+## System commands
 `/features`: 
 Shows a list of all the available features (automatic responses).
 
