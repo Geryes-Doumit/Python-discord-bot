@@ -75,12 +75,12 @@ def take_screenshot(critere, type, force):
         submit_button = driver.find_element(by='name', value='submit')
         submit_button.click()
         
-        # Find the element with the id 'x-auto-33-input'
-        edt_field = wait.until(EC.visibility_of_element_located((By.ID, 'x-auto-33-input')))
+        # Find the element with the id 'x-auto-111-input'
+        edt_field = wait.until(EC.visibility_of_element_located((By.ID, 'x-auto-111-input')))
         edt_field.send_keys(critere)
         
-        # Find the button with class name 'x-btn-text'
-        search_button = driver.find_element(by=By.CLASS_NAME, value='x-btn-text')
+        # Find the button with aria-descibedby 'x-auto-6'
+        search_button = driver.find_element(by=By.XPATH, value=f"//button[@aria-describedby='x-auto-6']")
         search_button.click()
         
         # Wait until the events are loaded
@@ -104,6 +104,7 @@ def take_screenshot(critere, type, force):
         print(f'Screenshot saved to {screenshot_path}')
         
     except Exception as e:
+        print(e)
         return e.__str__()
         
     finally:
