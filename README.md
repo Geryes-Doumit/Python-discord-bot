@@ -24,6 +24,9 @@ Roasts the specified person. If the server_specific argument is set to True, the
 `/addroast [roast]`: 
 Adds a roast to the server roasts (server_specific). The roast must contain '@n' to specify where the name of the person to roast goes.
 
+`/poulpi (state)`:
+Sends a random image of poulpi ! `state` is either 'happy' or 'sad'.
+
 `/heroswap [face] (hero)`: 
 Swaps the face of the image with the face of the specified hero. If no hero is specified, the bot will choose a random hero.
 
