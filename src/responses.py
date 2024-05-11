@@ -92,55 +92,19 @@ def features_command(guild) -> discord.Embed:
     return embed
 
 def status_string(bool):
-    return "" if bool else " (disabled)"
+    return " `enabled`" if bool else " `disabled`"
 
 def help_command(guild) -> discord.Embed:
     title =  "Available commands"
     embed = discord.Embed(title=title, color=discord.Color.yellow())
     
-    title = "/joke [lang]:" 
-    desc = "Answers with a random joke in the specified language"
+    title = "Github repository" 
+    desc = "To see all available commands and features, visit the \
+        [Github repository](https://github.com/Geryes-Doumit/Python-discord-bot)"
     embed.add_field(name=title, value=desc, inline=False)
     
-    title = "/blague:"
-    desc = "Answers with a random joke in french"
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    title = "/features:"
-    desc = "Shows a list of all the available features (automatic responses)"
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    title = "/enable or /disable [feature]:"
-    desc = "Activates or deactivates a feature"
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    title = "/roast [name] (server_specific):"
-    desc =  "Roasts the specified person. If the server_specific argument is specified, "
-    desc += "the roast will be chosen randomly from the server roasts, otherwise it will be "
-    desc += "from all the available roasts."
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    title = "/addroast [roast]:"
-    desc =  "Adds a roast to the server roasts (server_specific). The roast must contain '@n' to specify "
-    desc += "where the name of the person to roast goes."
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    if guild.name == "Info & réseaux":
-        title = "/edt"
-        desc = "Récupère et envoie l'emploi du temps"
-        embed.add_field(name=title, value=desc, inline=False)
-        
-    title = "/heroswap [face] (hero):"
-    desc =  "Swaps the face of the image with the face of the specified hero. "
-    desc += "If no hero is specified, the bot will choose a random hero."
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    title = "/faceswap [source] [target]:"
-    desc =  "Puts the source face on the target face."
-    embed.add_field(name=title, value=desc, inline=False)
-    
-    title = "/help:"
-    desc = "Shows this message"
+    title = "Features"
+    desc = "To see the status of the automatic responses, use the `/features` command"
     embed.add_field(name=title, value=desc, inline=False)
     
     return embed

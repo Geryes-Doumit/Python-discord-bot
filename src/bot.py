@@ -9,6 +9,7 @@ import face_swap
 import edt_command
 import profedt_command
 import meme_command
+import poulpi_command
 import json
 
 async def send_message(message:discord.message, user_message:str):
@@ -154,7 +155,36 @@ def run_bot():
         ephemeral = result[1]
         await interaction.response.send_message(content=content, ephemeral=ephemeral)
     
-
+    @bot.tree.command(description="Get a poulpi picture :3")
+    @app_commands.choices(state=[
+        discord.app_commands.Choice(name="all", value="all"),
+        discord.app_commands.Choice(name="happy", value="happy"),
+        discord.app_commands.Choice(name="sad", value="sad")
+    ])
+    async def poulpi(interaction, state:str='all'):
+        try:
+            poulpi_path = poulpi_command.poulpi_picture(state)
+        except Exception as e:
+            print(e)
+            return await interaction.response.send_message(content="An error occured. Please try again later.")
+        if poulpi_path == "error":
+            return await interaction.response.send_message(content="An error occured. Please try again later.")
+        
+        embed = discord.Embed(color=discord.Color.pink() if "sad" in poulpi_path else discord.Color.blue())
+        
+        try:
+            file = discord.File(poulpi_path, filename='poulpi.jpg')
+        except FileNotFoundError:
+            return await interaction.response.send_message(content="An error occured. Please try again later.")
+        
+        embed.set_image(url="attachment://poulpi.jpg")
+        await interaction.response.send_message(embed=embed, file=file)
+        
+        message = await interaction.original_response()
+        reactions = poulpi_command.get_msg_reactions(poulpi_path)
+        for reaction in reactions:
+            await message.add_reaction(reaction)
+    
     # ------------------------------------------------------------------------------------
     # -------------------------------    EDT command   -----------------------------------
     # ------------------------------------------------------------------------------------
