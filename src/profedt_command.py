@@ -97,8 +97,8 @@ def profedt(name, jours)->discord.Embed:
           embed_desc = embed_desc[:4093] + "..."
         
         try:
-          if date_to_show in embed.fields[-1].name:
-              embed.set_field_at(-1, name=date_to_show, value=embed.fields[-1].value + "\n" + embed_desc, inline=False)
+          if embed.fields[-1].name is not None and date_to_show in embed.fields[-1].name:
+              embed.set_field_at(-1, name=date_to_show, value=embed.fields[-1].value + "\n" + embed_desc, inline=False) # type: ignore
           else:
             if len(embed.fields) < 25:
               embed.add_field(name=date_to_show, value=embed_desc, inline=False)

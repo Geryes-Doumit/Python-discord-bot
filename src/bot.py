@@ -5,14 +5,10 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import responses
-import face_swap
-import edt_command
-import profedt_command
-import meme_command
-import poulpi_command
 import json
+import face_swap, edt_command, profedt_command, meme_command, poulpi_command
 
-async def send_message(message:discord.message, user_message:str):
+async def send_message(message:discord.Message, user_message:str):
     try:
         response = responses.respond(user_message, message.guild)
         if response == "parlebcp":
@@ -56,7 +52,7 @@ def run_bot():
         discord.app_commands.Choice(name="backflip", value="backflip"),
         discord.app_commands.Choice(name="insults", value="insults")
     ])
-    async def enable(interaction, feature:str):
+    async def enable(interaction:discord.Interaction, feature:str):
         await interaction.response.send_message(embed=responses.enable_command(interaction.guild, feature))
     
     @app_commands.command(name="disable",description="disables a feature")
@@ -66,7 +62,7 @@ def run_bot():
         discord.app_commands.Choice(name="backflip", value="backflip"),
         discord.app_commands.Choice(name="insults", value="insults")
     ])
-    async def disable(interaction, feature:str):
+    async def disable(interaction:discord.Interaction, feature:str):
         await interaction.response.send_message(embed=responses.disable_command(interaction.guild, feature))
     
     bot.tree.add_command(enable)
@@ -82,7 +78,7 @@ def run_bot():
         discord.app_commands.Choice(name="en", value="en"),
         discord.app_commands.Choice(name="fr", value="fr")
     ])
-    async def joke(interaction, lang:str="en"):
+    async def joke(interaction:discord.Interaction, lang:str="en"):
         await interaction.response.send_message(content=await responses.joke_command(lang))
         
     bot.tree.add_command(joke)
@@ -125,7 +121,7 @@ def run_bot():
     @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
     @app_commands.describe(name="The name of the person to roast (can be a mention)",
                            server_specific="Whether to only include the server-specific roasts or also include the global ones")
-    async def roast(interaction, name:str, server_specific:bool=False):
+    async def roast(interaction:discord.Interaction, name:str, server_specific:bool=False):
         if (name.__len__() > 100):
             await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
@@ -146,7 +142,7 @@ def run_bot():
         
     @bot.tree.command(description="Add a roast to the database")
     @app_commands.describe(roast="The roast to add (must contain '@n', it is where the name will be inserted)")
-    async def addroast(interaction, roast:str):
+    async def addroast(interaction:discord.Interaction, roast:str):
         if (roast.__len__() > 300):
             await interaction.response.send_message(content="A roast cannot be more than 300 characters long.", ephemeral=True)
             return
@@ -161,7 +157,7 @@ def run_bot():
         discord.app_commands.Choice(name="happy", value="happy"),
         discord.app_commands.Choice(name="sad", value="sad")
     ])
-    async def poulpi(interaction, state:str='all'):
+    async def poulpi(interaction:discord.Interaction, state:str='all'):
         try:
             poulpi_path = poulpi_command.poulpi_picture(state)
         except Exception as e:
@@ -192,14 +188,16 @@ def run_bot():
     @app_commands.command(name="edt",description="EDT de la semaine")
     @app_commands.choices(type=[
         discord.app_commands.Choice(name="semaine", value="semaine"),
+        discord.app_commands.Choice(name="semaine prochaine", value="semaine prochaine"),
         discord.app_commands.Choice(name="jour", value="jour"),
         discord.app_commands.Choice(name="demain", value="demain")
     ])
     @app_commands.describe(critere="Le critère de recherche (par défaut: 2ir)",
                            type="Le type de recherche (par défaut: semaine)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
-    async def edt(interaction, critere:str="2ir", type:str="semaine", force:bool=False):
-        if interaction.guild.name != "Info & réseaux":
+    async def edt(interaction:discord.Interaction, critere:str="2ir", type:str="semaine", force:bool=False):
+        if interaction.guild is None or \
+            (interaction.guild.id != 1017392713819230338 and interaction.guild.id != 754671642327646209):
             await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
             return
         
@@ -211,8 +209,9 @@ def run_bot():
 
         img_path = edt_command.take_screenshot(critere, type, force)
         if img_path == "samedi" or img_path == "dimanche":
+            roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
             return await interaction.followup.send(content=f"Tu demandes l'edt d'un {img_path}, prends ce roast chacal : \n\n"
-                                                   + responses.roast_command(interaction.user.display_name, interaction.guild))
+                                                   + roast)
         embed = discord.Embed(title="Emploi du temps · " + type, 
                               color=discord.Color.blue(), 
                               url="https://www.emploisdutemps.uha.fr/")
@@ -231,8 +230,9 @@ def run_bot():
     bot.tree.add_command(edt)
     
     @bot.tree.command(description="EDT d'un professeur")
-    async def profedt(interaction, name:str, jours:int=7):
-        if interaction.guild.name != "Info & réseaux":
+    async def profedt(interaction:discord.Interaction, name:str, jours:int=7):
+        if interaction.guild is None or \
+            (interaction.guild.id != 1017392713819230338 and interaction.guild.id != 754671642327646209):
             await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
             return
         
@@ -256,7 +256,7 @@ def run_bot():
     @app_commands.choices(hero=[
         discord.app_commands.Choice(name=file, value=file) for file in os.listdir('img/hero_swap')
     ])
-    async def heroswap(interaction, face:discord.Attachment, hero:str="random"):
+    async def heroswap(interaction:discord.Interaction, face:discord.Attachment, hero:str="random"):
         await interaction.response.defer()
         try:
             result_path = await face_swap.swap_faces_hero(face, hero)
@@ -277,7 +277,7 @@ def run_bot():
     bot.tree.add_command(heroswap)
     
     @bot.tree.command(description="Put the source face on the target face")
-    async def faceswap(interaction, source:discord.Attachment, target:discord.Attachment, replace_all:bool=False):
+    async def faceswap(interaction:discord.Interaction, source:discord.Attachment, target:discord.Attachment, replace_all:bool=False):
         await interaction.response.defer()
         try:
             result_path = await face_swap.swap_faces(source, target, replace_all)
@@ -353,12 +353,13 @@ def update_server_list(bot:commands.Bot):
 class DisappearingView(discord.ui.View):
     def __init__(self, timeout:float=120):
         super().__init__(timeout=timeout)
-        self.message = None # need to set this ourselves
+        self.message:discord.Message|None = None # need to set this ourselves
         
     async def on_timeout(self):
         for child in self.children:
             self.remove_item(child)
-        await self.message.edit(view=self)
+        if self.message is not None:
+            await self.message.edit(view=self)
 
 class DeleteFaceSwapButton(discord.ui.Button):
     def __init__(self, interaction:discord.Interaction):
@@ -366,19 +367,20 @@ class DeleteFaceSwapButton(discord.ui.Button):
         self.interaction = interaction
         
     async def callback(self, interaction:discord.Interaction):
-        await interaction.message.delete()
+        if interaction.message is not None:
+            await interaction.message.delete()
         
 class DeleteRoastButton(discord.ui.Button):
-    def __init__(self, roastIndex:int, guild:discord.guild, server_specific:bool):
+    def __init__(self, roastIndex:int, guild:discord.Guild, server_specific:bool):
         super().__init__(style=discord.ButtonStyle.danger, label="Delete Roast")
         self.roastIndex = roastIndex
         self.guild = guild
         self.server_specific = server_specific
         
     async def callback(self, interaction:discord.Interaction):
-        await interaction.message.edit(
-                        view=None,
-                        content=responses.deleteroast_button_function(self.roastIndex, self.guild, self.server_specific),
-                        ephemeral=True
+        if interaction.message is not None:
+            await interaction.message.edit(
+                content=responses.deleteroast_button_function(self.roastIndex, self.guild, self.server_specific),
+                view=None,
             )
         

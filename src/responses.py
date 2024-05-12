@@ -10,7 +10,11 @@ import json
 #Automatic responses
 #-----------------------------
 
-def respond(message:str, guild):
+def respond(message:str, guild:discord.Guild|None) -> None|str:
+    
+    if guild is None:
+        return
+    
     lower_message = message.lower()
            
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
@@ -44,7 +48,7 @@ def respond(message:str, guild):
 def alpha_characters_of(word:str) -> str:
     return ''.join([i for i in word if i.isalpha()])
 
-def feature_enabled(server_list, guild, feature:str) -> bool:
+def feature_enabled(server_list:dict, guild, feature:str) -> bool:
     return server_list[str(guild.id)][feature]
 
 
@@ -62,8 +66,11 @@ async def joke_command(lang:str) -> str:
         response = requests.get("https://official-joke-api.appspot.com/random_joke")
         json = response.json()
         return json["setup"] + "\n" + json["punchline"]
+    
+    else:
+        return "Invalid language."
 
-def features_command(guild) -> discord.Embed:
+def features_command(guild:discord.Guild) -> discord.Embed:
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
@@ -109,7 +116,10 @@ def help_command(guild) -> discord.Embed:
     
     return embed
 
-def enable_command(guild, feature:str):
+def enable_command(guild:discord.Guild | None, feature:str) -> discord.Embed:
+    if guild is None:
+        return discord.Embed(color=discord.Color.red()).add_field(name="Error", value="This command can only be used in a server", inline=False)
+    
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
@@ -127,7 +137,10 @@ def enable_command(guild, feature:str):
     embed.add_field(name="Feature enabled", value=f"The '{feature}' feature has been enabled for this server", inline=False)
     return embed
 
-def disable_command(guild, feature:str):
+def disable_command(guild:discord.Guild | None, feature:str) -> discord.Embed:
+    if guild is None:
+        return discord.Embed(color=discord.Color.red()).add_field(name="Error", value="This command can only be used in a server", inline=False)
+    
     with open("src/bot_stuff/servers.json", "r", encoding='utf-8') as f:
         server_list = json.load(f)
     
@@ -145,29 +158,33 @@ def disable_command(guild, feature:str):
     embed.add_field(name="Feature disabled", value=f"The '{feature}' feature has been disabled for this server", inline=False)
     return embed
 
-def roast_command(name:str, guild:discord.guild, server_specific, roastIndex=-1) -> str:
+def roast_command(name:str, guild:discord.Guild | None, server_specific=False, roastIndex=-1) -> tuple[str, int, bool]:
     all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
     general_roasts = all_roasts["general"]
     roasts = []
     
-    try :
-        
-        if not server_specific:
+    if guild is not None:
+        try :
+            
+            if not server_specific:
+                roasts += general_roasts
+            
+            roasts += all_roasts[str(guild.id)]
+        except KeyError:
             roasts += general_roasts
-        
-        roasts += all_roasts[str(guild.id)] 
-        
-    except Exception :
+    
+    else:
         roasts += general_roasts
+            
     
     if roastIndex > len(roasts) - 1:
-        return f"Roast index out of range (max: {len(roasts) - 1})"
+        return f"Roast index out of range (max: {len(roasts) - 1})", -1, False
     
     index = random.randint(0, len(roasts) - 1) if roastIndex < 0 else roastIndex
     roast = roasts[index]
     return roast.replace("@n", name), index, roast in general_roasts
 
-def deleteroast_button_function(roastIndex:int, guild:discord.guild, server_specific):
+def deleteroast_button_function(roastIndex:int, guild:discord.Guild, server_specific):
     all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
     
     roasts = []
@@ -197,8 +214,12 @@ def deleteroast_button_function(roastIndex:int, guild:discord.guild, server_spec
     
     return f"Roast `{roast}` deleted" if removed else "Roast not found"
 
-def addroast_command(roast:str, guild:discord.guild, serer_specific=True):
+def addroast_command(roast:str, guild:discord.Guild | None, serer_specific:bool=True):
     ephemeral = True
+    
+    if guild is None:
+        return "This command can only be used in a server", ephemeral
+    
     if not roast.__contains__('@n'):
         return "Roasts must contain '@n' to specify where the name of the person to roast goes", ephemeral
     
@@ -210,7 +231,7 @@ def addroast_command(roast:str, guild:discord.guild, serer_specific=True):
     try :
         if serer_specific and roast in all_roasts[str(guild.id)]:
             return "This roast is already in the server roasts", ephemeral
-    except Exception:
+    except KeyError:
         pass
     
     try :
@@ -219,7 +240,7 @@ def addroast_command(roast:str, guild:discord.guild, serer_specific=True):
         else:
             all_roasts["general"].append(roast)
     
-    except Exception: # if the server doesn't have a list of roasts yet
+    except KeyError: # if the server doesn't have a list of roasts yet
         if serer_specific:
             all_roasts[str(guild.id)] = [roast]
         

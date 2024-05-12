@@ -38,8 +38,8 @@ async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
         hero = cv2.imread('img/hero_swap/' + hero_choice)
     result = hero.copy()
     face_hero = app.get(hero)[0]
-    result = swapper.get(result, face_hero, face_img, paste_back=True)
-    tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+    result = swapper.get(result, face_hero, face_img, paste_back=True) # type: ignore
+    tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR)) # type: ignore
     tosave.save('img/face_swap_result.jpg')
     
     return 'img/face_swap_result.jpg'
@@ -89,14 +89,14 @@ async def swap_faces(source:discord.Attachment, target:discord.Attachment, repla
     if replace_all and len(face_target) > 1:
         for f in face_target:
             print('Replacing face...')
-            result = swapper.get(result, f, face_source, paste_back=True)
+            result = swapper.get(result, f, face_source, paste_back=True) # type: ignore
     else:
         print('Replacing face...')
-        result = swapper.get(result, face_target, face_source, paste_back=True)
+        result = swapper.get(result, face_target, face_source, paste_back=True) # type: ignore
     
     print('Saving image...')
     
-    tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR))
+    tosave = Image.fromarray(cv2.cvtColor(result, cv2.COLOR_RGB2BGR)) # type: ignore
     tosave.save('img/face_swap_result.jpg')
     
     print('Done.')

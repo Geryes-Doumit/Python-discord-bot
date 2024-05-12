@@ -2,15 +2,14 @@ from datetime import datetime, timedelta
 import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from credentials import * # personal file containing credentials
-from selenium.webdriver.support.ui import WebDriverWait
 
 days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 
-def take_screenshot(critere, type, force):
+def take_screenshot(critere:str, type:str, force:bool):
     if '/' in critere:
         critere = critere.replace('/', '-')
         
@@ -54,7 +53,7 @@ def take_screenshot(critere, type, force):
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("disable-gpu")
-    options.add_argument('window-size=1600x1080') if type=="semaine" \
+    options.add_argument('window-size=1600x1080') if type=="semaine" or type=="semaine prochaine"\
                                                   else options.add_argument('window-size=900x900')
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 20)
@@ -93,9 +92,9 @@ def take_screenshot(critere, type, force):
             current_day = days[day_number % 7]
             day_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{current_day}')]")
             day_button.click()
-            wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-PopupPanel')))
+            wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-Image')))
             
-        if type=="semaine" and day_number == 5 or day_number == 6:
+        if type=="semaine prochaine" or (type=="semaine" and day_number == 5 or day_number == 6):
             click_next_week(day_number, wait, driver)
         
         events = driver.find_element(by=By.ID, value='x-auto-129')
@@ -112,17 +111,18 @@ def take_screenshot(critere, type, force):
         driver.quit()
         return screenshot_path
     
-def click_next_week(day_number, wait, driver):
+def click_next_week(day_number, wait:WebDriverWait, driver:webdriver.Chrome):
     next_monday_number = str(int(datetime.today().strftime("%d")) + 7 - day_number)
     next_week_number = str(int(datetime.today().strftime("%W")) + 1)
-    next_month_number = int((datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%m"))
-    year = str(int((datetime.today() + datetime.timedelta(days=(7-day_number))).strftime("%Y")))
+    next_month_number = int((datetime.today() + timedelta(days=(7-day_number))).strftime("%m"))
+    year = str(int((datetime.today() + timedelta(days=(7-day_number))).strftime("%Y")))
     formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
     button_text = f"S{next_week_number} - lun. {formatted_next_monday} {months[next_month_number-1]} {year}"
-    print(button_text)
     try:
         next_week_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{button_text}')]")
+        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-Image')))
+        print(f"Clicking on '{next_week_button.text}'")
         next_week_button.click()
     except Exception:
         print("No next week button found")
-    wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-PopupPanel')))
+    wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, 'gwt-Image')))
