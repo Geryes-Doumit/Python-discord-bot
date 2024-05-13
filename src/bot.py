@@ -194,8 +194,9 @@ def run_bot():
     ])
     @app_commands.describe(critere="Le critère de recherche (par défaut: 2ir)",
                            type="Le type de recherche (par défaut: semaine)",
+                           date="Spécifer une date de format: 'jj/mm/aaaa' (par défaut: date actuelle)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
-    async def edt(interaction:discord.Interaction, critere:str="2ir", type:str="semaine", force:bool=False):
+    async def edt(interaction:discord.Interaction, critere:str="2ir", type:str="semaine", date:str=None, force:bool=False):
         if interaction.guild is None or \
             (interaction.guild.id != 1017392713819230338 and interaction.guild.id != 754671642327646209):
             await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
@@ -205,14 +206,28 @@ def run_bot():
             await interaction.response.send_message(content="You've exceeded the 20-character limit.", ephemeral=True)
             return
         
+        if date is not None:
+            try:
+                datetime.datetime.strptime(date, '%d/%m/%Y')
+            except ValueError:
+                await interaction.response.send_message(content="Format de date invalide. Veuillez utiliser le format `jj/mm/aaaa`.", ephemeral=True)
+                return
+        
         await interaction.response.defer()
 
-        img_path = edt_command.take_screenshot(critere, type, force)
+        img_path = edt_command.take_screenshot(critere, type, force, date)
         if img_path == "samedi" or img_path == "dimanche":
             roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
             return await interaction.followup.send(content=f"Tu demandes l'edt d'un {img_path}, prends ce roast chacal : \n\n"
                                                    + roast)
-        embed = discord.Embed(title="Emploi du temps · " + type, 
+            
+        if "dateTooFarError" in img_path:
+            roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
+            return await interaction.followup.send(content="Tu veux l'edt dans plus d'1 an ?" +
+                                                   " Prends ce roast chacal : \n\n" + roast)
+            
+        date_str = f" ({date})" if date is not None else ""
+        embed = discord.Embed(title="Emploi du temps · " + type + date_str, 
                               color=discord.Color.blue(), 
                               url="https://www.emploisdutemps.uha.fr/")
         
@@ -220,7 +235,7 @@ def run_bot():
             file = discord.File(img_path, filename="edt.png")
         except Exception as e:
             print(e)
-            return await interaction.followup.send(content="An error occured. Please try again later.")
+            return await interaction.followup.send(content="Une erreur est survenue. Veuillez réessayer plus tard.")
         
         embed.set_image(url="attachment://edt.png")
         embed.set_footer(text="critère: " + critere + " · le " 
