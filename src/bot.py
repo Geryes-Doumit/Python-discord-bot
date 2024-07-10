@@ -143,13 +143,22 @@ def run_bot():
     @bot.tree.command(description="Add a roast to the database")
     @app_commands.describe(roast="The roast to add (must contain '@n', it is where the name will be inserted)")
     async def addroast(interaction:discord.Interaction, roast:str):
-        if (roast.__len__() > 300):
+        if (len(roast) > 300):
             await interaction.response.send_message(content="A roast cannot be more than 300 characters long.", ephemeral=True)
             return
         result = responses.addroast_command(roast, interaction.guild)
         content = result[0]
         ephemeral = result[1]
         await interaction.response.send_message(content=content, ephemeral=ephemeral)
+        
+    @bot.tree.command(description="List the roasts in the database")
+    @app_commands.describe(server_specific="Whether to only include the server-specific roasts or also include the global ones")
+    async def roastlist(interaction:discord.Interaction, server_specific:bool=False):
+        messages:list[str] = responses.listroasts_command(interaction.guild, server_specific)
+        
+        await interaction.response.send_message(content=messages[0], ephemeral=True)
+        for message in messages[1:]:
+            await interaction.followup.send(content=message, ephemeral=True)
     
     @bot.tree.command(description="Get a poulpi picture :3")
     @app_commands.choices(state=[
@@ -202,7 +211,7 @@ def run_bot():
             await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
             return
         
-        if (critere.__len__() > 20):
+        if (len(critere) > 20):
             await interaction.response.send_message(content="You've exceeded the 20-character limit.", ephemeral=True)
             return
         

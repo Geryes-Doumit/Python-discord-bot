@@ -249,3 +249,44 @@ def addroast_command(roast:str, guild:discord.Guild | None, serer_specific:bool=
     
     ephemeral = False
     return f"Roast added to the {'server' if serer_specific else 'general'} roasts.```{roast}```", ephemeral
+
+def listroasts_command(guild:discord.Guild | None, server_specific:bool):
+    all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
+    
+    general_roasts:list[str] = all_roasts["general"]
+    server_roasts = []
+    
+    try :
+        server_roasts = all_roasts[str(guild.id)]
+    except KeyError as e:
+        print(e)
+        pass
+    
+    messages:list[str] = []
+    
+    content:str = ""
+    
+    if not server_specific:
+        content += "## General roasts\n"
+        for roast in general_roasts:
+            if len(content) + len(roast) > 2000:
+                messages.append(content)
+                content = ""
+            content += "- " + roast + "\n"
+        
+        messages.append(content)
+        content = ""
+    
+    content += "## Server roasts\n"
+    if len(server_roasts) == 0:
+        content += "No server roasts yet, use `/addroast` to add one"
+    else:
+        for roast in server_roasts:
+            if len(content) + len(roast) > 2000:
+                messages.append(content)
+                content = ""
+            content += "- " + roast + "\n"
+        
+        messages.append(content)
+    
+    return messages

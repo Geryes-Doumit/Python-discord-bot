@@ -1,11 +1,13 @@
 # Python-discord-bot
 
 A fun discord bot coded in python. It has multiple features and quirky responses.
+
 <p align="center">
   <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/6bfc32f0-a8cd-4265-a72a-4b266f543eee" width="800"/>
 </p>
 
 ## Fun commands
+
 `/joke [lang]`:
 Answers with a random joke in the specified language.
 
@@ -18,19 +20,22 @@ Sends a random meme using [meme-api](https://github.com/D3vd/Meme_Api).
 `/monkey`:
 Sends a random image of a monkey using [placemonkeys.com](https://www.placemonkeys.com/).
 
-`/roast [name] (server_specific)`: 
+`/roast [name] (server_specific)`:
 Roasts the specified person. If the server_specific argument is set to True, the roast will be chosen randomly from the server roasts, otherwise it will be from all the available roasts.
 
-`/addroast [roast]`: 
+`/roastlist (server_specific)`:
+Show all available roasts. Choose whether or not you only want the server roasts with server_specific.
+
+`/addroast [roast]`:
 Adds a roast to the server roasts (server_specific). The roast must contain '@n' to specify where the name of the person to roast goes.
 
 `/poulpi (state)`:
 Sends a random image of poulpi ! `state` is either 'happy' or 'sad'.
 
-`/heroswap [face] (hero)`: 
+`/heroswap [face] (hero)`:
 Swaps the face of the image with the face of the specified hero. If no hero is specified, the bot will choose a random hero.
 
-`/faceswap [source] [target]`: 
+`/faceswap [source] [target]`:
 Puts the source face on the target face.
 
 <table align="center">
@@ -46,23 +51,26 @@ Puts the source face on the target face.
 <p align="center">Faceswap examples</p>
 
 ## System commands
-`/features`: 
+
+`/features`:
 Shows a list of all the available features (automatic responses).
 
-`/enable` or `/disable [feature]`: 
+`/enable` or `/disable [feature]`:
 Activates or deactivates a feature.
 
-`/help`: 
+`/help`:
 Shows the list of available commands.
 
 ## My class' specific commands
+
 These commands are only available in a personal server.
 
-`/edt [...]`: 
+`/edt [...]`:
 Captures and sends a screenshot of our schedule for the week.
 
-`/profedt [name] (days)`: 
+`/profedt [name] (days)`:
 Sends the schedule of the corresponding teacher, 'days' is set to 7 by default.
+
 <table align="center">
   <tr>
     <td width="50%" align="center">
@@ -76,23 +84,23 @@ Sends the schedule of the corresponding teacher, 'days' is set to 7 by default.
 <p align="center">What edt and profedt look like</p>
 
 ## Automatic responses
+
 The bot analyses every message sent in a server and answers specific ones if the automatic response is enabled for the server.
 
-> **Backflip GIFs:** <br/>
+> **Backflip GIFs:** `<br/>`
 > When a message contains 'backflip', the bot will respond with a backflip GIF.
 
-> **Di:** <br/>
+> **Di:** `<br/>`
 > If a word starts with 'di' or 'dy', the bot will answer with the rest of the word.
 
-> **Cri:** <br/>
+> **Cri:** `<br/>`
 > If a word starts with 'cri' or 'cry', the bot will answer with the rest of the word in uppercase.
 
-> **Insults:** <br/>
+> **Insults:** `<br/>`
 > If a message contains a french insult, the bot will answer with a random response.
 
 To activate or deactivate a feature, use the `/enable` or `/disable` commands.
 
-##
 <footer>
 <p align="center">
   Have fun with the code! Created with ❤️ by Geryes.
