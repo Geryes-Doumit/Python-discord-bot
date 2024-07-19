@@ -24,7 +24,7 @@ Sends a random image of a monkey using [placemonkeys.com](https://www.placemonke
 Roasts the specified person. If the server_specific argument is set to True, the roast will be chosen randomly from the server roasts, otherwise it will be from all the available roasts.
 
 `/roast list (server_specific)`:
-Show all available roasts. Choose whether or not you only want the server roasts with server_specific.
+Shows all available roasts. Choose whether or not you only want the server roasts with server_specific.
 
 `/roast add [roast]`:
 Adds a roast to the server roasts (server_specific). The roast must contain '@n' to specify where the name of the person to roast goes.
