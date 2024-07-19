@@ -118,15 +118,15 @@ def run_bot():
             return await interaction.followup.send(content="An error occured. Please try again later.")
         
 
-    @bot.tree.command(description="Roast someone (a random roast will be chosen from the database)")
+    @bot.hybrid_group(fallback="user", description="Roast someone (a random roast will be chosen from the database)")
     @app_commands.describe(name="The name of the person to roast (can be a mention)",
                            server_specific="Whether to only include the server-specific roasts or also include the global ones")
-    async def roast(interaction:discord.Interaction, name:str, server_specific:bool=False):
+    async def roast(ctx:commands.Context, name:str, server_specific:bool=False):
         if (name.__len__() > 100):
-            await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
+            await ctx.interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
         
-        roast_result = responses.roast_command(name, interaction.guild, server_specific)
+        roast_result = responses.roast_command(name, ctx.interaction.guild, server_specific)
         content = roast_result[0]
         roast_index = roast_result[1]
         is_general = roast_result[2]
@@ -137,28 +137,28 @@ def run_bot():
             # view.add_item(delete_roast_button)
             pass
         
-        await interaction.response.send_message(content=content, view=view)
-        view.message = await interaction.original_response()
+        await ctx.interaction.response.send_message(content=content, view=view)
+        view.message = await ctx.interaction.original_response()
         
-    @bot.tree.command(description="Add a roast to the database")
-    @app_commands.describe(roast="The roast to add (must contain '@n', it is where the name will be inserted)")
-    async def addroast(interaction:discord.Interaction, roast:str):
+    @roast.command(description="Add a roast to the database")
+    @app_commands.describe(content="The roast to add (must contain '@n', it is where the name will be inserted)")
+    async def add(ctx:commands.Context, roast:str):
         if (len(roast) > 300):
-            await interaction.response.send_message(content="A roast cannot be more than 300 characters long.", ephemeral=True)
+            await ctx.interaction.response.send_message(content="A roast cannot be more than 300 characters long.", ephemeral=True)
             return
-        result = responses.addroast_command(roast, interaction.guild)
+        result = responses.addroast_command(roast, ctx.interaction.guild)
         content = result[0]
         ephemeral = result[1]
-        await interaction.response.send_message(content=content, ephemeral=ephemeral)
+        await ctx.interaction.response.send_message(content=content, ephemeral=ephemeral)
         
-    @bot.tree.command(description="List the roasts in the database")
+    @roast.command(description="List the roasts in the database")
     @app_commands.describe(server_specific="Whether to only include the server-specific roasts or also include the global ones")
-    async def roastlist(interaction:discord.Interaction, server_specific:bool=False):
-        messages:list[str] = responses.listroasts_command(interaction.guild, server_specific)
+    async def list(ctx:commands.Context, server_specific:bool=False):
+        messages:list[str] = responses.listroasts_command(ctx.interaction.guild, server_specific)
         
-        await interaction.response.send_message(content=messages[0], ephemeral=True)
+        await ctx.interaction.response.send_message(content=messages[0], ephemeral=True)
         for message in messages[1:]:
-            await interaction.followup.send(content=message, ephemeral=True)
+            await ctx.interaction.followup.send(content=message, ephemeral=True)
     
     @bot.tree.command(description="Get a poulpi picture :3")
     @app_commands.choices(state=[
@@ -329,13 +329,14 @@ def run_bot():
     @bot.event
     async def on_ready():
         update_server_list(bot)
-        print("Bot is ready 🔥🔥")
         
         try:
             synced = await bot.tree.sync()
             print(f"Synced {len(synced)} commands")
         except Exception as e:
             print(e)
+        
+        print("Bot is ready 🔥🔥")
     
     @bot.event
     async def on_message(message):
