@@ -141,7 +141,7 @@ def run_bot():
         view.message = await ctx.interaction.original_response()
         
     @roast.command(description="Add a roast to the database")
-    @app_commands.describe(content="The roast to add (must contain '@n', it is where the name will be inserted)")
+    @app_commands.describe(roast="The roast to add (must contain '@n', it is where the name will be inserted)")
     async def add(ctx:commands.Context, roast:str):
         if (len(roast) > 300):
             await ctx.interaction.response.send_message(content="A roast cannot be more than 300 characters long.", ephemeral=True)
