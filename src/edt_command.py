@@ -66,12 +66,13 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         options.add_argument('headless')
     
     if "semaine" in type:
-        options.add_argument('window-size=1600x1080')
+        options.add_argument('window-size=1600,1080')
     else: 
-        options.add_argument('window-size=900x900')
+        options.add_argument('window-size=900,900')
     
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 20)
+    small_wait = WebDriverWait(driver, 3)
     
     try:
         # Access the website
@@ -89,12 +90,20 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         submit_button = driver.find_element(by='name', value='submit')
         submit_button.click()
         
+        try:
+            # try to find the "Ouvrir" or "Open" button (might not be present)
+            small_wait.until(EC.visibility_of_element_located((By.XPATH, "//button[contains(text(), 'Open')]")))
+            ouvrir_button = driver.find_element(by=By.XPATH, value="//button[contains(text(), 'Open')]")
+            ouvrir_button.click()
+        except Exception:
+            pass
+        
         # Find the element with the id 'x-auto-111-input'
-        edt_field = wait.until(EC.visibility_of_element_located((By.ID, 'x-auto-111-input')))
+        edt_field = wait.until(EC.visibility_of_element_located((By.ID, 'x-auto-136-input')))
         edt_field.send_keys(critere)
         
         # Find the button with aria-descibedby 'x-auto-6'
-        search_button = driver.find_element(by=By.XPATH, value=f"//button[@aria-describedby='x-auto-6']")
+        search_button = driver.find_element(by=By.XPATH, value=f"//button[@aria-describedby='x-auto-31']")
         search_button.click()
         
         # Wait until the events are loaded
@@ -119,7 +128,7 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
             if date_str is None:
                 click_next_week(day_number, wait, driver)
         
-        events = driver.find_element(by=By.ID, value='x-auto-129')
+        events = driver.find_element(by=By.CLASS_NAME, value='planningPanelBackground')
         events.screenshot(screenshot_path)
         
         print(f'Screenshot saved to {screenshot_path}')
@@ -158,7 +167,7 @@ def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Chrome) -> bool
     month_name = months[date.month-1].upper()
     
     next_month_button = driver.find_element(by=By.CLASS_NAME, value='x-date-right-icon')
-    month_name_element = driver.find_element(by=By.ID, value='x-auto-30')
+    month_name_element = driver.find_element(by=By.ID, value='x-auto-55')
     
     attempts = 0
     while month_name + ' ' + str(date.year) not in month_name_element.text:
@@ -174,3 +183,6 @@ def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Chrome) -> bool
     day_button.click()
     wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
     return True
+
+if __name__ == "__main__":
+    take_screenshot("3ir", "semaine", True, None, True) # Test

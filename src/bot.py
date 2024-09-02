@@ -205,7 +205,7 @@ def run_bot():
                            type="Le type de recherche (par défaut: semaine)",
                            date="Spécifer une date de format: 'jj/mm/aaaa' (par défaut: date actuelle)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
-    async def edt(interaction:discord.Interaction, critere:str="2ir", type:str="semaine", date:str=None, force:bool=False):
+    async def edt(interaction:discord.Interaction, critere:str="3ir", type:str="semaine", date:str=None, force:bool=False):
         if interaction.guild is None or \
             (interaction.guild.id != 1017392713819230338 and interaction.guild.id != 754671642327646209):
             await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
@@ -252,25 +252,6 @@ def run_bot():
         await interaction.followup.send(embed=embed, file=file)
     
     bot.tree.add_command(edt)
-    
-    @bot.tree.command(description="EDT d'un professeur")
-    async def profedt(interaction:discord.Interaction, name:str, jours:int=7):
-        if interaction.guild is None or \
-            (interaction.guild.id != 1017392713819230338 and interaction.guild.id != 754671642327646209):
-            await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
-            return
-        
-        if (name.__len__() > 100):
-            await interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
-            return
-        
-        if jours < 1 or jours > 100:
-            await interaction.response.send_message(content="The number of days must be between 1 and 100.", ephemeral=True)
-            return
-        
-        await interaction.response.defer()
-        embed = profedt_command.profedt(name, jours)
-        await interaction.followup.send(embed=embed)
     
     # ------------------------------------------------------------------------------------
     # -------------------------------    Face swap    ------------------------------------

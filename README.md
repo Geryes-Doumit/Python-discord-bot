@@ -68,20 +68,17 @@ These commands are only available in a personal server.
 `/edt [...]`:
 Captures and sends a screenshot of our schedule for the week.
 
-`/profedt [name] (days)`:
-Sends the schedule of the corresponding teacher, 'days' is set to 7 by default.
-
 <table align="center">
   <tr>
     <td width="50%" align="center">
       <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/49a69735-7e05-4a94-b256-c4e7fad9b06a" width="500"/>
     </td>
-    <td width="50%" align="center">
+    <!-- <td width="50%" align="center">
       <img src="https://github.com/Geryes-Doumit/Python-discord-bot/assets/102948870/a80417a1-a0c2-4f28-8fad-c8cbc880bfb2" width="200"/>
-    </td>
+    </td> -->
   </tr>
 </table>
-<p align="center">What edt and profedt look like</p>
+<p align="center">What the edt command looks like</p>
 
 ## Automatic responses
 
