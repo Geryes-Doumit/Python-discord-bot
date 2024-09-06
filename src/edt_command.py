@@ -8,8 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from credentials import * # personal file containing credentials
 
 days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
-months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
-
+months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
 loading_icon_class = 'gwt-Image'
 
 def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, headless:bool=True):
@@ -149,7 +148,8 @@ def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Chrome)
     next_month_number = int((datetime.today() + timedelta(days=(7-day_number))).strftime("%m"))
     year = str(int((datetime.today() + timedelta(days=(7-day_number))).strftime("%Y")))
     formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
-    button_text = f"S{next_week_number} - lun. {formatted_next_monday} {months[next_month_number-1]} {year}"
+    # Faire attention aux doubles espaces
+    button_text = f"S{next_week_number}  - lun.  {formatted_next_monday}  {months[next_month_number-1]}  {year}"
     try:
         next_week_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{button_text}')]")
         wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
@@ -185,4 +185,4 @@ def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Chrome) -> bool
     return True
 
 if __name__ == "__main__":
-    take_screenshot("3ir", "semaine", True, None, True) # Test
+    take_screenshot("3ir", "jour", True, '20/12/2024', False) # Test
