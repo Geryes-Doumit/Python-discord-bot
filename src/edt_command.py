@@ -195,5 +195,4 @@ def command_details_per_server(server_id:str) -> tuple[bool, str]:
     return (True, servers[server_id]['critere'])
 
 if __name__ == "__main__": # Test
-    # take_screenshot("3ir", "semaine", True, None, False)
-    print(command_details_per_server("754671642327646209"))
+    take_screenshot("3ir", "semaine", True, None, False)
