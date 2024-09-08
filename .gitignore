@@ -166,6 +166,7 @@ cython_debug/
 # Private bot stuff
 private_bot_data.py
 servers.json
+edt_details.json
 roasts_per_server.json
 credentials.py
 img/edt/*

@@ -205,10 +205,14 @@ def run_bot():
                            type="Le type de recherche (par défaut: semaine)",
                            date="Spécifer une date de format: 'jj/mm/aaaa' (par défaut: date actuelle)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
-    async def edt(interaction:discord.Interaction, critere:str="3ir", type:str="semaine", date:str=None, force:bool=False):
-        if interaction.guild is None or \
-            (interaction.guild.id != 1017392713819230338 and interaction.guild.id != 754671642327646209):
-            await interaction.response.send_message(content="This command is only available in the Info & réseaux server.", ephemeral=True)
+    async def edt(interaction:discord.Interaction, critere:str="_default_", type:str="semaine", date:str=None, force:bool=False):
+        if interaction.guild is None:
+            allowed, default_critere = False, ""
+        else:
+            allowed, default_critere = edt_command.command_details_per_server(str(interaction.guild.id))
+        
+        if not allowed:
+            await interaction.response.send_message(content="This command not available in this server.", ephemeral=True)
             return
         
         if (len(critere) > 20):
@@ -223,6 +227,9 @@ def run_bot():
                 return
         
         await interaction.response.defer()
+        
+        if critere == "_default_":
+            critere = default_critere
 
         img_path = edt_command.take_screenshot(critere, type, force, date)
         if img_path == "samedi" or img_path == "dimanche":

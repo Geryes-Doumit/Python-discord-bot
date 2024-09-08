@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import os
-import time
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -9,6 +9,7 @@ from credentials import * # personal file containing credentials
 
 days = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"]
+months_french = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
 loading_icon_class = 'gwt-Image'
 
 def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, headless:bool=True):
@@ -149,7 +150,7 @@ def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Chrome)
     year = str(int((datetime.today() + timedelta(days=(7-day_number))).strftime("%Y")))
     formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
     # Faire attention aux doubles espaces
-    button_text = f"S{next_week_number}  - lun.  {formatted_next_monday}  {months[next_month_number-1]}  {year}"
+    button_text = f"S{next_week_number}  - lun.  {formatted_next_monday}  {months_french[next_month_number-1]}  {year}"
     try:
         next_week_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{button_text}')]")
         wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
@@ -184,5 +185,15 @@ def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Chrome) -> bool
     wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
     return True
 
-if __name__ == "__main__":
-    take_screenshot("3ir", "jour", True, '20/12/2024', False) # Test
+def command_details_per_server(server_id:str) -> tuple[bool, str]:
+    with open('src/bot_stuff/edt_details.json') as f:
+        servers = json.load(f)
+    
+    if server_id not in servers:
+        return (False, "")
+    
+    return (True, servers[server_id]['critere'])
+
+if __name__ == "__main__": # Test
+    # take_screenshot("3ir", "semaine", True, None, False)
+    print(command_details_per_server("754671642327646209"))

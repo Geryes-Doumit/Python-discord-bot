@@ -1,3 +1,6 @@
 This folder contains private_bot_data.py, which contains the bot token and the inivte link,
 it also contains the servers.json file, which contains the server ids list with their names and their specific settings.
 These files are not included in the repository, so you will need to create them yourself.
+
+September 2024 :
+    added the edt_details.json file, to manage permissions and default criteria for the edt command.
