@@ -87,7 +87,7 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         password_field.send_keys(password)
         
         # Find the element with the name 'submit'
-        submit_button = driver.find_element(by='name', value='submit')
+        submit_button = driver.find_element(by='name', value='submitBtn')
         submit_button.click()
         
         try:
