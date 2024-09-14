@@ -29,6 +29,9 @@ Shows all available roasts. Choose whether or not you only want the server roast
 `/roast add [roast]`:
 Adds a roast to the server roasts (server_specific). The roast must contain '@n' to specify where the name of the person to roast goes.
 
+`/roast delete [index]`:
+Deletes the server roast associated with the index. Every server roast's index is shown in the `/roast list` command.
+
 `/poulpi (state)`:
 Sends a random image of poulpi ! `state` is either 'happy' or 'sad'.
 
@@ -84,16 +87,16 @@ Captures and sends a screenshot of our schedule for the week.
 
 The bot analyses every message sent in a server and answers specific ones if the automatic response is enabled for the server.
 
-> **Backflip GIFs:** <br/>
+> **Backflip GIFs:** `<br/>`
 > When a message contains 'backflip', the bot will respond with a backflip GIF.
 
-> **Di:** <br/>
+> **Di:** `<br/>`
 > If a word starts with 'di' or 'dy', the bot will answer with the rest of the word.
 
-> **Cri:** <br/>
+> **Cri:** `<br/>`
 > If a word starts with 'cri' or 'cry', the bot will answer with the rest of the word in uppercase.
 
-> **Insults:** <br/>
+> **Insults:** `<br/>`
 > If a message contains a french insult, the bot will answer with a random response.
 
 To activate or deactivate a feature, use the `/enable` or `/disable` commands.

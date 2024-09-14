@@ -126,19 +126,9 @@ def run_bot():
             await ctx.interaction.response.send_message(content="You've exceeded the 100-character limit.", ephemeral=True)
             return
         
-        roast_result = responses.roast_command(name, ctx.interaction.guild, server_specific)
-        content = roast_result[0]
-        roast_index = roast_result[1]
-        is_general = roast_result[2]
-
-        # delete_roast_button = DeleteRoastButton(roast_index, interaction.guild, server_specific)
-        view = DisappearingView(timeout=20)
-        if not is_general:
-            # view.add_item(delete_roast_button)
-            pass
+        content = responses.roast_command(name, ctx.interaction.guild, server_specific)
         
-        await ctx.interaction.response.send_message(content=content, view=view)
-        view.message = await ctx.interaction.original_response()
+        await ctx.interaction.response.send_message(content=content)
         
     @roast.command(description="Add a roast to the database")
     @app_commands.describe(roast="The roast to add (must contain '@n', it is where the name will be inserted)")
@@ -159,6 +149,29 @@ def run_bot():
         await ctx.interaction.response.send_message(content=messages[0], ephemeral=True)
         for message in messages[1:]:
             await ctx.interaction.followup.send(content=message, ephemeral=True)
+            
+    @roast.command(description="Delete a server specific roast from the database")
+    @app_commands.describe(index="The index of the roast to delete. Use the '/roast list' command to get the indexes.")
+    async def delete(ctx:commands.Context, index:int):
+        if index <= 0:
+            await ctx.interaction.response.send_message(content="The index must be superior to 0.", ephemeral=True)
+            return
+        
+        response, success = responses.findroast_command(index-1, ctx.interaction.guild)
+        
+        if not success:
+            await ctx.interaction.response.send_message(content=response, ephemeral=True)
+            return
+        
+        response = f"Are you sure you want to delete this roast? ```{response}```"
+        yes_button = ConfirmDeleteRoastButton(index, ctx.interaction.guild)
+        no_button = AbandonDeleteRoastButton()
+        confirm_view = DisappearingView(timeout=120)
+        confirm_view.add_item(yes_button)
+        confirm_view.add_item(no_button)
+        
+        await ctx.interaction.response.send_message(content=response, view=confirm_view)
+        confirm_view.message = await ctx.interaction.original_response()
     
     @bot.tree.command(description="Get a poulpi picture :3")
     @app_commands.choices(state=[
@@ -383,17 +396,22 @@ class DeleteFaceSwapButton(discord.ui.Button):
         if interaction.message is not None:
             await interaction.message.delete()
         
-class DeleteRoastButton(discord.ui.Button):
-    def __init__(self, roastIndex:int, guild:discord.Guild, server_specific:bool):
-        super().__init__(style=discord.ButtonStyle.danger, label="Delete Roast")
+class ConfirmDeleteRoastButton(discord.ui.Button):
+    def __init__(self, roastIndex:int, guild:discord.Guild):
+        super().__init__(style=discord.ButtonStyle.danger, label="Yes")
         self.roastIndex = roastIndex
         self.guild = guild
-        self.server_specific = server_specific
         
     async def callback(self, interaction:discord.Interaction):
         if interaction.message is not None:
-            await interaction.message.edit(
-                content=responses.deleteroast_button_function(self.roastIndex, self.guild, self.server_specific),
-                view=None,
-            )
+            content = responses.deleteroast_command(self.roastIndex-1, self.guild)
+            
+            await interaction.message.edit(content=content, view=None)
+
+class AbandonDeleteRoastButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(style=discord.ButtonStyle.grey, label="No")
         
+    async def callback(self, interaction:discord.Interaction):
+        if interaction.message is not None:
+            await interaction.message.delete()

@@ -158,63 +158,72 @@ def disable_command(guild:discord.Guild | None, feature:str) -> discord.Embed:
     embed.add_field(name="Feature disabled", value=f"The '{feature}' feature has been disabled for this server", inline=False)
     return embed
 
-def roast_command(name:str, guild:discord.Guild | None, server_specific=False, roastIndex=-1) -> tuple[str, int, bool]:
+def roast_command(name:str, guild:discord.Guild | None, server_specific=False) -> str:
     all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
     general_roasts = all_roasts["general"]
     roasts = []
     
     if guild is not None:
         try :
-            
             if not server_specific:
                 roasts += general_roasts
-            
             roasts += all_roasts[str(guild.id)]
-        except KeyError:
+            
+        except KeyError: # if the server doesn't have a list of specific roasts yet
             roasts += general_roasts
     
     else:
         roasts += general_roasts
-            
     
-    if roastIndex > len(roasts) - 1:
-        return f"Roast index out of range (max: {len(roasts) - 1})", -1, False
-    
-    index = random.randint(0, len(roasts) - 1) if roastIndex < 0 else roastIndex
+    index = random.randint(0, len(roasts) - 1)
     roast = roasts[index]
-    return roast.replace("@n", name), index, roast in general_roasts
+    return roast.replace("@n", name)
 
-def deleteroast_button_function(roastIndex:int, guild:discord.Guild, server_specific):
+def findroast_command(roastIndex:int, guild:discord.Guild) -> tuple[str, bool]:
+    all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
+    
+    roasts = []
+    success = False
+    
+    try :
+        roasts += all_roasts[str(guild.id)]
+    except KeyError: # if the server doesn't have a list of specific roasts yet
+        return "No roasts found.", success
+    
+    try :
+        roast = roasts[roastIndex]
+    except Exception:
+        return "Invalid roast index. Use `/roast list` to see all the roasts and their indexes.", success
+    
+    success = True
+    return roast, success
+
+def deleteroast_command(roastIndex:int, guild:discord.Guild) -> str:
     all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
     
     roasts = []
     
-    if not server_specific:
-        roasts += all_roasts["general"]
-    
     try :
         roasts += all_roasts[str(guild.id)]
-    except Exception:
-        pass
+    except KeyError: # if the server doesn't have a list of specific roasts yet
+        return "No roasts to delete."
     
     try :
         roast = roasts[roastIndex]
-        print('Removing roast: ' + roast)
         all_roasts[str(guild.id)].remove(roast)
         
         if len(all_roasts[str(guild.id)]) == 0:
             del all_roasts[str(guild.id)]
-        
-        removed = True
+            
     except Exception:
-        removed = False
+        return "Invalid roast index. Use `/roast list` to see all the roasts and their indexes."
     
     with open("src/responses_data/roasts_per_server.json", "w") as f:
         json.dump(all_roasts, f, indent=4)
     
-    return f"Roast `{roast}` deleted" if removed else "Roast not found"
+    return f"Successfully deleted the roast. ```{roast}```"
 
-def addroast_command(roast:str, guild:discord.Guild | None, serer_specific:bool=True):
+def addroast_command(roast:str, guild:discord.Guild | None, server_specific:bool=True) -> tuple[str, bool]:
     ephemeral = True
     
     if guild is None:
@@ -223,32 +232,24 @@ def addroast_command(roast:str, guild:discord.Guild | None, serer_specific:bool=
     if not roast.__contains__('@n'):
         return "Roasts must contain '@n' to specify where the name of the person to roast goes", ephemeral
     
-    all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
-    
-    if not serer_specific and roast in all_roasts["general"]:
-        return "This roast is already in the general roasts", ephemeral
+    with open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8') as f:
+        all_roasts = json.load(f)
     
     try :
-        if serer_specific and roast in all_roasts[str(guild.id)]:
-            return "This roast is already in the server roasts", ephemeral
-    except KeyError:
-        pass
-    
-    try :
-        if serer_specific:
+        if server_specific:
             all_roasts[str(guild.id)].append(roast)
         else:
             all_roasts["general"].append(roast)
     
     except KeyError: # if the server doesn't have a list of roasts yet
-        if serer_specific:
+        if server_specific:
             all_roasts[str(guild.id)] = [roast]
         
     with open("src/responses_data/roasts_per_server.json", "w") as f:
         json.dump(all_roasts, f, indent=4)
     
     ephemeral = False
-    return f"Roast added to the {'server' if serer_specific else 'general'} roasts.```{roast}```", ephemeral
+    return f"Roast added to the {'server' if server_specific else 'general'} roasts.```{roast}```", ephemeral
 
 def listroasts_command(guild:discord.Guild | None, server_specific:bool):
     all_roasts = json.load(open("src/responses_data/roasts_per_server.json", "r", encoding='utf-8'))
@@ -268,6 +269,7 @@ def listroasts_command(guild:discord.Guild | None, server_specific:bool):
     
     if not server_specific:
         content += "## General roasts\n"
+        content += "-# _These general roasts are available in every server, they cannot be deleted._\n"
         for roast in general_roasts:
             if len(content) + len(roast) > 2000:
                 messages.append(content)
@@ -278,14 +280,16 @@ def listroasts_command(guild:discord.Guild | None, server_specific:bool):
         content = ""
     
     content += "## Server roasts\n"
+    content += "-# _To delete a server roast, use the `/roast delete` command with the correct index._\n"
     if len(server_roasts) == 0:
-        content += "No server roasts yet, use `/addroast` to add one"
+        content += "No server roasts yet, use `/roast add` to add one"
     else:
-        for roast in server_roasts:
+        for i in range(len(server_roasts)):
+            roast = server_roasts[i]
             if len(content) + len(roast) > 2000:
                 messages.append(content)
                 content = ""
-            content += "- " + roast + "\n"
+            content += str(i+1) + ". " + roast + "\n"
         
         messages.append(content)
     
