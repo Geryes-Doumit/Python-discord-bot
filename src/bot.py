@@ -382,9 +382,9 @@ class DisappearingView(discord.ui.View):
         self.message:discord.Message|None = None # need to set this ourselves
         
     async def on_timeout(self):
-        for child in self.children:
-            self.remove_item(child)
         if self.message is not None:
+            for child in self.children:
+                self.remove_item(child)
             await self.message.edit(view=self)
 
 class DeleteFaceSwapButton(discord.ui.Button):
