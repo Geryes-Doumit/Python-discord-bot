@@ -6,6 +6,7 @@ from discord import app_commands
 from discord.ext import commands
 import responses
 import json
+import concurrent.futures, asyncio
 import face_swap, edt_command, profedt_command, meme_command, poulpi_command
 
 async def send_message(message:discord.Message, user_message:str):
@@ -243,8 +244,12 @@ def run_bot():
         
         if critere == "_default_":
             critere = default_critere
-
-        img_path = edt_command.take_screenshot(critere, type, force, date)
+            
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                # Run take_screenshot in a separate thread
+                future = executor.submit(edt_command.take_screenshot, critere, type, force, date)
+                img_path = await bot.loop.run_in_executor(None, future.result)
+        # img_path = edt_command.take_screenshot(critere, type, force, date)
         if img_path == "samedi" or img_path == "dimanche":
             roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
             return await interaction.followup.send(content=f"Tu demandes l'edt d'un {img_path}, prends ce roast chacal : \n\n"
@@ -284,7 +289,11 @@ def run_bot():
     async def heroswap(interaction:discord.Interaction, face:discord.Attachment, hero:str="random"):
         await interaction.response.defer()
         try:
-            result_path = await face_swap.swap_faces_hero(face, hero)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                # Run in a separate thread
+                future = executor.submit(asyncio.run, face_swap.swap_faces_hero(face, hero))
+                result_path = await bot.loop.run_in_executor(None, future.result)
+            # result_path = await face_swap.swap_faces_hero(face, hero)
             if result_path == 'noface':
                 return await interaction.followup.send(content="No face found in the image.")
             
@@ -305,7 +314,11 @@ def run_bot():
     async def faceswap(interaction:discord.Interaction, source:discord.Attachment, target:discord.Attachment, replace_all:bool=False):
         await interaction.response.defer()
         try:
-            result_path = await face_swap.swap_faces(source, target, replace_all)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                # Run in a separate thread
+                future = executor.submit(asyncio.run, face_swap.swap_faces(source, target, replace_all))
+                result_path = await bot.loop.run_in_executor(None, future.result)
+            # result_path = await face_swap.swap_faces(source, target, replace_all)
             if result_path == 'noface_source':
                 return await interaction.followup.send(content="No face found in the source image.")
             elif result_path == 'noface_target':
