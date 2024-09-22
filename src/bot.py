@@ -245,10 +245,10 @@ def run_bot():
         if critere == "_default_":
             critere = default_critere
             
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                # Run take_screenshot in a separate thread
-                future = executor.submit(edt_command.take_screenshot, critere, type, force, date)
-                img_path = await bot.loop.run_in_executor(None, future.result)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Run take_screenshot in a separate thread
+            future = executor.submit(edt_command.take_screenshot, critere, type, force, date)
+            img_path = await bot.loop.run_in_executor(None, future.result)
         # img_path = edt_command.take_screenshot(critere, type, force, date)
         if img_path == "samedi" or img_path == "dimanche":
             roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
