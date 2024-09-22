@@ -7,7 +7,7 @@ from discord.ext import commands
 import responses
 import json
 import concurrent.futures, asyncio
-import face_swap, edt_command, profedt_command, meme_command, poulpi_command
+import face_swap, edt_command, meme_command, poulpi_command
 
 async def send_message(message:discord.Message, user_message:str):
     try:
