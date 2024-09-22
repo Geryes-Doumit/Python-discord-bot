@@ -1,1 +1,0 @@
-Contains credentials.json, calendar_id.json and token.json files for Google Calendar API
