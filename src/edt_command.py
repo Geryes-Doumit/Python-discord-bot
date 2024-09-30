@@ -144,10 +144,11 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         return screenshot_path
     
 def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Chrome):
-    next_monday_number = str(int(datetime.today().strftime("%d")) + 7 - day_number)
-    next_week_number = str(int(datetime.today().strftime("%W")) + 1)
-    next_month_number = int((datetime.today() + timedelta(days=(7-day_number))).strftime("%m"))
-    year = str(int((datetime.today() + timedelta(days=(7-day_number))).strftime("%Y")))
+    next_week_date = datetime.today() + timedelta(7 - day_number)
+    next_monday_number = str(next_week_date.day)
+    next_week_number = next_week_date.strftime("%W")
+    next_month_number = int(next_week_date.strftime("%m"))
+    year = next_week_date.strftime("%Y")
     formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
     # Faire attention aux doubles espaces
     button_text = f"S{next_week_number}  - lun.  {formatted_next_monday}  {months_french[next_month_number-1]}  {year}"
@@ -195,4 +196,4 @@ def command_details_per_server(server_id:str) -> tuple[bool, str]:
     return (True, servers[server_id]['critere'])
 
 if __name__ == "__main__": # Test
-    take_screenshot("3ir", "semaine", True, None, False)
+    take_screenshot("3ir", "semaine prochaine", True, None, False)
