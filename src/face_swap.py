@@ -71,23 +71,19 @@ async def swap_faces(source:discord.Attachment, target:discord.Attachment, repla
     if img.shape[2] == 4:
         img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
 
-    face = app.get(img)
+    faces_target = app.get(img)
 
-    if face.__len__() == 0:
+    if len(faces_target) == 0:
         return 'noface_target'
     
-    if replace_all:
-        face_target = face
-    else:
-        face_target = random.choice(face)
+    face_target = random.choice(faces_target)
     
     swapper = insightface.model_zoo.get_model(os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx')
     
-    
     result = img.copy()
     
-    if replace_all and len(face_target) > 1:
-        for f in face_target:
+    if replace_all and len(faces_target) > 1:
+        for f in faces_target:
             print('Replacing face...')
             result = swapper.get(result, f, face_source, paste_back=True) # type: ignore
     else:

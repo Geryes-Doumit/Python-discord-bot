@@ -1,6 +1,6 @@
 import requests
 
-def get_random_meme():
+def get_random_meme() -> tuple[str, str]:
     filepath = "img/meme/random_meme."
     extension = "null"
     k = 0
@@ -16,13 +16,14 @@ def get_random_meme():
             json_response = response.json()
             
             image_url = json_response["url"]
+            upvotes = json_response["ups"]
             
             extension = image_url.split(".")[-1]
             
             k += 1
         
         if k == max_tries and extension not in extension_list:
-            return "error"
+            return "error", "0"
             
         image_response = requests.get(image_url)
         filepath += extension
@@ -30,11 +31,11 @@ def get_random_meme():
             f.write(image_response.content)
             
         print("Got meme from " + image_url)
-        return filepath
+        return filepath, upvotes
     
     except Exception as e:
         print(e)
-        return "error"
+        return "error", "0"
     
 def get_random_monkey():
     filepath = "img/meme/monkey/random_monkey.png"

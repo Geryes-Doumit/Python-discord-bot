@@ -93,13 +93,14 @@ def run_bot():
     @bot.tree.command(description="Sends a random meme")
     async def meme(interaction):
         await interaction.response.defer()
-        image_path = meme_command.get_random_meme()
+        image_path, upvotes = meme_command.get_random_meme()
+        message_content = f"`upvotes: {upvotes}`" if upvotes != "0" else ""
         
         if image_path == "error":
             return await interaction.followup.send(content="An error occured. Please try again later.")
         try:
             file = discord.File(image_path, filename=image_path)
-            return await interaction.followup.send(file=file)
+            return await interaction.followup.send(content=message_content, file=file)
         except Exception as e:
             print(e)
             return await interaction.followup.send(content="An error occured. Please try again later.")
@@ -215,7 +216,7 @@ def run_bot():
         discord.app_commands.Choice(name="jour", value="jour"),
         discord.app_commands.Choice(name="demain", value="demain")
     ])
-    @app_commands.describe(critere="Le critère de recherche (par défaut: 2ir)",
+    @app_commands.describe(critere="Le critère de recherche",
                            type="Le type de recherche (par défaut: semaine)",
                            date="Spécifer une date de format: 'jj/mm/aaaa' (par défaut: date actuelle)",
                            force="Force un nouveau screenshot même s'il y en a déjà créé il y a moins de 10 min (par défaut: False)")
@@ -236,6 +237,7 @@ def run_bot():
         if date is not None:
             try:
                 datetime.datetime.strptime(date, '%d/%m/%Y')
+                    
             except ValueError:
                 await interaction.response.send_message(content="Format de date invalide. Veuillez utiliser le format `jj/mm/aaaa`.", ephemeral=True)
                 return
@@ -251,13 +253,13 @@ def run_bot():
             img_path = await bot.loop.run_in_executor(None, future.result)
         # img_path = edt_command.take_screenshot(critere, type, force, date)
         if img_path == "samedi" or img_path == "dimanche":
-            roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
+            roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)
             return await interaction.followup.send(content=f"Tu demandes l'edt d'un {img_path}, prends ce roast chacal : \n\n"
                                                    + roast)
             
         if "dateTooFarError" in img_path:
-            roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)[0]
-            return await interaction.followup.send(content="Tu veux l'edt dans plus d'1 an ?" +
+            roast:str = responses.roast_command(interaction.user.display_name, interaction.guild, False)
+            return await interaction.followup.send(content="C'est quoi cette date ?" +
                                                    " Prends ce roast chacal : \n\n" + roast)
             
         date_str = f" ({date})" if date is not None else ""
