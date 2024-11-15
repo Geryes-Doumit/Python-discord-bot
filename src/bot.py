@@ -106,9 +106,9 @@ def run_bot():
             return await interaction.followup.send(content="An error occured. Please try again later.")
         
     @bot.tree.command(description="Sends a random picture of a monkey")
-    async def monkey(interaction):
+    async def monkey(interaction, width:int=None, height:int=None):
         await interaction.response.defer()
-        image_path = meme_command.get_random_monkey()
+        image_path = meme_command.get_random_monkey(width, height)
         
         if image_path == "error":
             return await interaction.followup.send(content="An error occured. Please try again later.")

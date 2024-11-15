@@ -37,10 +37,17 @@ def get_random_meme() -> tuple[str, str]:
         print(e)
         return "error", "0"
     
-def get_random_monkey():
+def get_random_monkey(width: int|None = None, height: int|None = None) -> str:
     filepath = "img/meme/monkey/random_monkey.png"
     try:
-        image_response = requests.get("https://www.placemonkeys.com/900/900?random")
+        if width is not None and height is not None:
+            image_response = requests.get(f"https://www.placemonkeys.com/{width}/{height}?random")
+        elif width is not None:
+            image_response = requests.get(f"https://www.placemonkeys.com/{width}?random")
+        elif height is not None:
+            image_response = requests.get(f"https://www.placemonkeys.com/{height}?random")
+        else:
+            image_response = requests.get("https://www.placemonkeys.com/2160?random")
         
         with open(filepath, "wb") as f:
             f.write(image_response.content)
