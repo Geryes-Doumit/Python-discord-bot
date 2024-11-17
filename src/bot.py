@@ -313,20 +313,30 @@ def run_bot():
     bot.tree.add_command(heroswap)
     
     @bot.tree.command(description="Put the source face on the target face")
-    async def faceswap(interaction:discord.Interaction, source:discord.Attachment, target:discord.Attachment, replace_all:bool=False):
+    @app_commands.describe(source="The source image (the face to put on the target face)",
+                           target="The target image (the face that gets replaced. Can be a GIF)",
+                           replace_all="Whether to replace all the faces in the target image (not for gif images)",
+                           discard_unswapped="Whether to discard the unswapped faces in the target image (only for gif images)")
+    async def faceswap(interaction:discord.Interaction, source:discord.Attachment, target:discord.Attachment, 
+                       replace_all:bool=False, discard_unswapped:bool=False):
         await interaction.response.defer()
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 # Run in a separate thread
-                future = executor.submit(asyncio.run, face_swap.swap_faces(source, target, replace_all))
+                future = executor.submit(asyncio.run, face_swap.swap_faces(source, target, replace_all, discard_unswapped))
                 result_path = await bot.loop.run_in_executor(None, future.result)
             # result_path = await face_swap.swap_faces(source, target, replace_all)
             if result_path == 'noface_source':
                 return await interaction.followup.send(content="No face found in the source image.")
             elif result_path == 'noface_target':
                 return await interaction.followup.send(content="No face found in the target image.")
+            elif result_path == 'gif_source':
+                return await interaction.followup.send(content="You cannot use a gif as a source image.")
+            elif result_path == 'too_many_frames':
+                return await interaction.followup.send(content="The target gif cannot contain more than 200 frames.")
             
-            result = discord.File(result_path, filename="faceswap_result.jpg")
+            filename = result_path.split("/")[-1]
+            result = discord.File(result_path, filename=filename)
             delete_button = DeleteFaceSwapButton(interaction)
             delete_view = DisappearingView(timeout=120)
             delete_view.add_item(delete_button)
