@@ -1,3 +1,4 @@
+import contextlib
 import io
 import random
 import cv2
@@ -12,13 +13,15 @@ import imghdr
 import insightface
 from insightface.app import FaceAnalysis
 import aiohttp
+import onnxruntime
 
 MODEL_PATH = os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx'
 # MODEL_PATH = "/Users/Shared/Inswapper/inswapper_128.onnx"
 
 async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
-    app = FaceAnalysis(name='buffalo_l')
-    app.prepare(ctx_id=0, det_size=(640, 640))
+    with contextlib.redirect_stdout(None):
+        app = FaceAnalysis(name='buffalo_l')
+        app.prepare(ctx_id=0, det_size=(640, 640))
 
     data = await get_data_from_url(attachment.url)
     
@@ -28,14 +31,15 @@ async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
     if img.shape[2] == 4:
         img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
 
-    face = app.get(img)
+    faces = app.get(img)
 
-    if face.__len__() == 0:
+    if len(faces) == 0:
         return 'noface'
     
-    face_img = random.choice(face)
+    face_img = random.choice(faces)
     
-    swapper = insightface.model_zoo.get_model(MODEL_PATH)
+    with contextlib.redirect_stdout(None):
+        swapper = insightface.model_zoo.get_model(MODEL_PATH)
     
     if hero_choice == "random":
         face_swap_images = os.listdir('img/hero_swap')
@@ -52,8 +56,9 @@ async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
 
 async def swap_faces(source:discord.Attachment, target:discord.Attachment, replace_all:bool = False,
                      discard_unswapped:bool = False):
-    app = FaceAnalysis(name='buffalo_l')
-    app.prepare(ctx_id=0, det_size=(640, 640))
+    with contextlib.redirect_stdout(None):
+        app = FaceAnalysis(name='buffalo_l')
+        app.prepare(ctx_id=0, det_size=(640, 640))
 
     data = await get_data_from_url(source.url)
     
@@ -91,12 +96,13 @@ async def swap_faces(source:discord.Attachment, target:discord.Attachment, repla
     
     face_target = random.choice(faces_target)
     
-    swapper = insightface.model_zoo.get_model(MODEL_PATH)
+    with contextlib.redirect_stdout(None):
+        swapper = insightface.model_zoo.get_model(MODEL_PATH)
     
     result = img.copy()
     
-    print(f'Replacing {len(faces_target)} face...')
     if replace_all and len(faces_target) > 1:
+        print(f'Replacing {len(faces_target)} faces...')
         for f in faces_target:
             print('Replacing face...')
             result = swapper.get(result, f, face_source, paste_back=True) # type: ignore
@@ -120,7 +126,8 @@ def gif_swap_faces(app:FaceAnalysis, face_source:list, target:discord.Attachment
         print("Too many frames!")
         return "too_many_frames"
         
-    swapper = insightface.model_zoo.get_model(MODEL_PATH)
+    with contextlib.redirect_stdout(None):
+        swapper = insightface.model_zoo.get_model(MODEL_PATH)
     
     success, frame = video.read()
     framelist = []

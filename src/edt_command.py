@@ -44,7 +44,7 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         if not force and diff < timedelta(minutes=10): # 10 minutes
             return screenshot_path
     except Exception as e:
-        print(e)
+        print("No recent screenshot found, taking a new one")
         pass
     
     if date_str is None:
@@ -62,6 +62,8 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
     # Set up the Selenium webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("disable-gpu")
+    # reduce comments to avoid spamming the console
+    options.add_argument("log-level=3")
     if headless:
         options.add_argument('headless')
     
@@ -98,11 +100,11 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         except Exception:
             pass
         
-        # Find the element with the id 'x-auto-111-input'
+        # Find the element search field
         edt_field = wait.until(EC.visibility_of_element_located((By.ID, 'x-auto-136-input')))
         edt_field.send_keys(critere)
         
-        # Find the button with aria-descibedby 'x-auto-6'
+        # Find the search button
         search_button = driver.find_element(by=By.XPATH, value=f"//button[@aria-describedby='x-auto-31']")
         search_button.click()
         
@@ -124,7 +126,7 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
             day_button.click()
             wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
             
-        if type=="semaine prochaine" or (type=="semaine" and day_number == 5 or day_number == 6):
+        if type=="semaine prochaine" or (type=="semaine" and (day_number == 5 or day_number == 6)):
             if date_str is None:
                 click_next_week(day_number, wait, driver)
         

@@ -371,6 +371,27 @@ def run_bot():
         
         await send_message(message, message.content)
         await bot.process_commands(message)
+    
+    @bot.event
+    async def on_interaction(interaction:discord.Interaction):
+        command:discord.app_commands.Command = interaction.command
+        command_name:str = command.name if command is not None else "(...)"
+        command_origin:str = ""
+        if interaction.guild is not None:
+            command_origin = f"the server {interaction.guild.name}"
+        else:
+            command_origin = f"their DMs"
+            
+        date_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
+        
+        log_str = f"[{date_str}] Processing /{command_name}, called by {interaction.user.name} from {command_origin}..."
+        
+        print(log_str)
+        
+    @bot.event
+    async def on_app_command_completion(interaction:discord.Interaction, command:discord.app_commands.Command):
+        print(f"Command /{command.name} completed.")
+        print()
         
     @bot.event
     async def on_guild_join(guild):
@@ -407,10 +428,13 @@ class DisappearingView(discord.ui.View):
         self.message:discord.Message|None = None # need to set this ourselves
         
     async def on_timeout(self):
-        if self.message is not None:
-            for child in self.children:
-                self.remove_item(child)
-            await self.message.edit(view=self)
+        try:
+            if self.message is not None:
+                for child in self.children:
+                    self.remove_item(child)
+                await self.message.edit(view=self)
+        except Exception as e:
+            pass
 
 class DeleteFaceSwapButton(discord.ui.Button):
     def __init__(self, interaction:discord.Interaction):
