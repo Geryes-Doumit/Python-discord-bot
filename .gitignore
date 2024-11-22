@@ -171,6 +171,8 @@ roasts_per_server.json
 credentials.py
 img/edt/*
 img/face_swap*
+img/temp.*
+img/heart_locket/*
 img/meme/random*
 img/meme/monkey/random*
 blague_api*

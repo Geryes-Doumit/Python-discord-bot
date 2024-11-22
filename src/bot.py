@@ -8,6 +8,7 @@ import responses
 import json
 import concurrent.futures, asyncio
 import face_swap, edt_command, meme_command, poulpi_command
+import heart_locket_command
 
 async def send_message(message:discord.Message, user_message:str):
     try:
@@ -204,6 +205,33 @@ def run_bot():
         reactions = poulpi_command.get_msg_reactions(poulpi_path)
         for reaction in reactions:
             await message.add_reaction(reaction)
+            
+    @bot.tree.command(description="Create a heart locket gif")
+    @app_commands.describe(image="The image to put in the heart locket",
+                           text="The text to put in the heart locket",
+                           orientation="The orientation of the text (image-text or text-image)"
+    )
+    @app_commands.choices(orientation=[
+        discord.app_commands.Choice(name="image-text", value="image-text"),
+        discord.app_commands.Choice(name="text-image", value="text-image")
+    ])
+    async def heart_locket(interaction:discord.Interaction, image:discord.Attachment, text:str, orientation:str="image-text"):
+        await interaction.response.defer()
+        try:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                # Run in a separate thread
+                future = executor.submit(asyncio.run, heart_locket_command.make_heart_locket(image, text, orientation))
+                gif_path = await bot.loop.run_in_executor(None, future.result)
+                
+            if gif_path == "error":
+                return await interaction.followup.send(content="An error occured. Please try again later.")
+            
+            file = discord.File(gif_path, filename="heart_locket.gif")
+            await interaction.followup.send(file=file)
+            os.remove(gif_path)
+        except Exception as e:
+            print(e)
+            await interaction.followup.send(content="An error occured. Please try again later.")
     
     # ------------------------------------------------------------------------------------
     # -------------------------------    EDT command   -----------------------------------
