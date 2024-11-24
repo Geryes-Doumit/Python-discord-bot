@@ -27,7 +27,8 @@ async def make_heart_locket(image:discord.Attachment, text:str, orientation:str=
         options.add_argument('headless')
     
     # return value
-    path = "error"    
+    path = "error"
+    temp_path = "img\\temp.None"  
     
     driver = webdriver.Chrome(options=options)
     try:
@@ -187,5 +188,5 @@ class Test:
 
 if __name__ == "__main__": # for debugging purposes
     import asyncio
-    test = Test("https://cdn.futura-sciences.com/cdn-cgi/image/width=1024,quality=50,format=auto/sources/images/AI-creation.jpg")
+    test = Test("https://cdn.futura-sciences.com/cdn-cgi/image/width=1024,quality=50,format=auto/sources/images/AI-creation.jpgjjj")
     asyncio.run(make_heart_locket(test, "Hello, world!", headless=False))
