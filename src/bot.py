@@ -348,6 +348,19 @@ def run_bot():
     async def faceswap(interaction:discord.Interaction, source:discord.Attachment, target:discord.Attachment, 
                        replace_all:bool=False, discard_unswapped:bool=False):
         await interaction.response.defer()
+        
+        frame_number = await face_swap.get_number_of_frames(target)
+        
+        if frame_number <= 0:
+            return await interaction.followup.send(content="An error occured while reading the target file.")
+        elif frame_number > 200:
+            return await interaction.followup.send(content="The target gif cannot contain more than 200 frames.")
+        elif frame_number > 1:
+            minutes = ((frame_number*2) // 60) + 1
+            minutes_str = "minute" if minutes == 1 else "minutes"
+            await interaction.followup.send(content=f"Processing {frame_number} frames..." +
+                                        f"\n-# This could take about {minutes} {minutes_str} to finish.")
+        
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 # Run in a separate thread
@@ -369,8 +382,8 @@ def run_bot():
             delete_view = DisappearingView(timeout=120)
             delete_view.add_item(delete_button)
             
-            await interaction.followup.send(file=result, view=delete_view)
-            delete_view.message = await interaction.original_response()
+            message:discord.Message = await interaction.followup.send(file=result, view=delete_view)
+            delete_view.message = await interaction.followup.fetch_message(message.id)
         except Exception as e:
             await interaction.followup.send(content="An error occured. Please try again later.")
             print(e)

@@ -154,6 +154,20 @@ def gif_swap_faces(app:FaceAnalysis, face_source:list, target:discord.Attachment
     print("Done.")
     return 'img/face_swap_result.gif'
 
+async def get_number_of_frames(attachment:discord.Attachment):
+    data = await get_data_from_url(attachment.url)
+    
+    try:
+        if imghdr.what(io.BytesIO(data)) == 'gif':
+            video = cv2.VideoCapture(attachment.url)
+            total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+            video.release()
+            return total_frames
+        else:
+            return 1
+    except:
+        return -1
+
 async def get_data_from_url(url):
         
     async with aiohttp.ClientSession() as session:
