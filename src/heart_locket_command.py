@@ -13,8 +13,9 @@ import imghdr
 import io
 
 DL_DIRECTORY = os.environ['USERPROFILE'] + "\\Documents\\Python-discord-bot\\img\\heart_locket\\"
+# DL_DIRECTORY = "/Users/geryes/Pictures"
 
-async def make_heart_locket(image:discord.Attachment, text:str, orientation:str="image-text", headless=True):
+async def make_heart_locket(image:discord.Attachment, text:str, image2:discord.Attachment=None, orientation:str="image-text", headless=True):
     # Set up the Selenium webdriver
     options = webdriver.ChromeOptions()
     options.add_argument("disable-gpu")
@@ -28,7 +29,8 @@ async def make_heart_locket(image:discord.Attachment, text:str, orientation:str=
     
     # return value
     path = "error"
-    temp_path = "img\\temp.None"  
+    temp_path = "img\\temp.None"
+    temp_path2 = "img\\temp2.None"
     
     driver = webdriver.Chrome(options=options)
     try:
@@ -44,9 +46,14 @@ async def make_heart_locket(image:discord.Attachment, text:str, orientation:str=
         if orientation=="image-text":
             temp_path = await insert_image(driver, image)
             await insert_text(driver, text)
-        else:
+        elif orientation=="text-image":
             await insert_text(driver, text)
             temp_path = await insert_image(driver, image)
+        elif orientation=="image-image":
+            temp_path = await insert_image(driver, image)
+            if image2 is None:
+                return "image2_none"
+            temp_path2 = await insert_image(driver, image2, True)
         
         wb_animate = driver.find_element(by=By.ID, value="wb-animate")
         wb_animate.click()
@@ -73,13 +80,17 @@ async def make_heart_locket(image:discord.Attachment, text:str, orientation:str=
         driver.quit()
         try:
             os.remove(temp_path)
+            os.remove(temp_path2)
         except:
             pass
         
     return path
         
-async def insert_image(driver, image:discord.Attachment):
-    temp_path = await download_image(image)
+async def insert_image(driver, image:discord.Attachment, second_image=False):
+    if not second_image:
+        temp_path = await download_image(image)
+    else:
+        temp_path = await download_image(image, "2")
     # crop image to a square
     await crop_image(temp_path)
     
@@ -133,10 +144,10 @@ async def insert_text(driver:webdriver.Chrome, text:str):
 def filter_non_bmp_characters(text):
     return ''.join(c for c in text if ord(c) <= 0xFFFF)
 
-async def download_image(image:discord.Attachment):
+async def download_image(image:discord.Attachment, num_str=""):
     data = await get_data_from_url(image.url)
     extention = imghdr.what(io.BytesIO(data))
-    filename = f"temp.{extention}"
+    filename = f"temp{num_str}.{extention}"
     with open(f"img\\{filename}", "wb") as f:
         f.write(data)
     return "img\\" + filename
@@ -166,7 +177,9 @@ def getDownLoadedFileName(driver, waitTime):
     endTime = time.time()+waitTime
     while True:
         try:
-            return driver.execute_script("return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('div#content  #file-link').text")
+            return driver.execute_script(
+                "return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('div#content  #file-link').text"
+            )
         except Exception as e:
             print(e)
             pass
@@ -188,5 +201,8 @@ class Test:
 
 if __name__ == "__main__": # for debugging purposes
     import asyncio
-    test = Test("https://cdn.futura-sciences.com/cdn-cgi/image/width=1024,quality=50,format=auto/sources/images/AI-creation.jpgjjj")
-    asyncio.run(make_heart_locket(test, "Hello, world!", headless=False))
+    test = Test("https://img.freepik.com/photos-gratuite/morskie-oko-tatry_1204-510.jpg?t=st=1734421226~exp=1734424826~hmac=e6f56fce363081df8e0b909c4a20e82de459daabfe392082aaf3e99231204986&w=2000")
+    
+    test_str = asyncio.run(make_heart_locket(test, "Hello, world!", test, orientation="image-image", headless=False))
+    
+    print(test_str)

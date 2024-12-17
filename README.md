@@ -41,7 +41,7 @@ Swaps the face of the image with the face of the specified hero. If no hero is s
 `/faceswap [source] [target]`:
 Puts the source face on the target face. The target image can be a GIF.
 
-`/heart_locket [image] [text] (orientation)`:
+`/heart_locket [image] [orientation] (text) (second_image)`:
 Uses [makesweet.com](https://makesweet.com/my/heart-locket) to make and send a heart locket gif animation.
 
 <table align="center">

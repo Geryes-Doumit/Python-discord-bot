@@ -209,22 +209,27 @@ def run_bot():
     @bot.tree.command(description="Create a heart locket gif")
     @app_commands.describe(image="The image to put in the heart locket",
                            text="The text to put in the heart locket",
-                           orientation="The orientation of the text (image-text or text-image)"
+                           orientation="The orientation of the text (image-text or text-image)",
+                           second_image="The second image to put in the heart locket (only for image-image orientation)"
     )
     @app_commands.choices(orientation=[
         discord.app_commands.Choice(name="image-text", value="image-text"),
-        discord.app_commands.Choice(name="text-image", value="text-image")
+        discord.app_commands.Choice(name="text-image", value="text-image"),
+        discord.app_commands.Choice(name="image-image", value="image-image")
     ])
-    async def heart_locket(interaction:discord.Interaction, image:discord.Attachment, text:str, orientation:str="image-text"):
+    async def heart_locket(interaction:discord.Interaction, image:discord.Attachment, orientation:str,
+                           text:str="My beloved", second_image:discord.Attachment=None):
         await interaction.response.defer()
         try:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 # Run in a separate thread
-                future = executor.submit(asyncio.run, heart_locket_command.make_heart_locket(image, text, orientation))
+                future = executor.submit(asyncio.run, heart_locket_command.make_heart_locket(image, text, second_image, orientation))
                 gif_path = await bot.loop.run_in_executor(None, future.result)
                 
             if gif_path == "error":
                 return await interaction.followup.send(content="An error occured. Please try again later.")
+            elif gif_path=="image2_none":
+                return await interaction.followup.send(content="You need to provide a second image for the 'image-image' orientation.")
             
             file = discord.File(gif_path, filename="heart_locket.gif")
             await interaction.followup.send(file=file)
