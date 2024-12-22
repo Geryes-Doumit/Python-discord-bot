@@ -60,19 +60,21 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         return days[day_number].lower()
     
     # Set up the Selenium webdriver
-    options = webdriver.ChromeOptions()
+    options = webdriver.FirefoxOptions()
     options.add_argument("disable-gpu")
-    # reduce comments to avoid spamming the console
-    options.add_argument("log-level=3")
     if headless:
-        options.add_argument('headless')
+        options.add_argument('--headless')
     
     if "semaine" in type:
-        options.add_argument('window-size=1600,1080')
+        # options.add_argument('window-size=1600,1080')
+        options.add_argument('--width=1600')
+        options.add_argument('--height=1080')
     else: 
-        options.add_argument('window-size=900,900')
+        # options.add_argument('window-size=900,900')
+        options.add_argument('--width=900')
+        options.add_argument('--height=900')
     
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Firefox(options=options)
     wait = WebDriverWait(driver, 20)
     small_wait = WebDriverWait(driver, 3)
     
@@ -145,7 +147,7 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
         driver.quit()
         return screenshot_path
     
-def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Chrome):
+def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Firefox):
     next_week_date = datetime.today() + timedelta(7 - day_number)
     next_monday_number = str(next_week_date.day)
     next_week_number = next_week_date.strftime("%W")
@@ -163,7 +165,7 @@ def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Chrome)
         print("No next week button found")
     wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
     
-def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Chrome) -> bool:
+def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Firefox) -> bool:
     # Date format: dd/mm/yyyy
     max_attempts = 13
     
@@ -198,4 +200,4 @@ def command_details_per_server(server_id:str) -> tuple[bool, str]:
     return (True, servers[server_id]['critere'])
 
 if __name__ == "__main__": # Test
-    take_screenshot("3ir", "semaine prochaine", True, None, False)
+    take_screenshot("3ir", "demain", True, "6/1/2025", False)

@@ -12,27 +12,29 @@ import aiohttp
 import imghdr
 import io
 
-DL_DIRECTORY = os.environ['USERPROFILE'] + "\\Documents\\Python-discord-bot\\img\\heart_locket\\"
+#DL_DIRECTORY = os.environ['USERPROFILE'] + "\\Documents\\Python-discord-bot\\img\\heart_locket\\"
 # DL_DIRECTORY = "/Users/geryes/Pictures"
+DL_DIRECTORY = "/app/img/heart_locket/"
 
 async def make_heart_locket(image:discord.Attachment, text:str, image2:discord.Attachment=None, orientation:str="image-text", headless=True):
     # Set up the Selenium webdriver
-    options = webdriver.ChromeOptions()
+    options = webdriver.FirefoxOptions()
+    options.set_preference("browser.download.folderList", 2)
+    options.set_preference("browser.download.manager.showWhenStarting", False)
+    options.set_preference("browser.download.dir", DL_DIRECTORY)
+    options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream,image/jpeg,image/png,image/gif")
+
     options.add_argument("disable-gpu")
-    # reduce comments to avoid spamming the console
-    options.add_argument("log-level=3")
-    prefs = {"download.default_directory" : DL_DIRECTORY}
-    options.add_experimental_option("prefs",prefs)
     
     if headless:
-        options.add_argument('headless')
+        options.add_argument('--headless')
     
     # return value
     path = "error"
-    temp_path = "img\\temp.None"
-    temp_path2 = "img\\temp2.None"
+    temp_path = "img/temp.None"
+    temp_path2 = "img/temp2.None"
     
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Firefox(options=options)
     try:
         driver.get('https://makesweet.com/my/heart-locket')
         
@@ -104,20 +106,23 @@ async def insert_image(driver, image:discord.Attachment, second_image=False):
     input_photo_button = driver.find_element(by=By.XPATH, value="//input[@title='Insert photo...']")
     input_photo_button.send_keys(os.path.abspath(temp_path))
     
+    print("added image...")
     return temp_path
 
-async def insert_text(driver:webdriver.Chrome, text:str):
+async def insert_text(driver:webdriver.Firefox, text:str):
     try:
         wb_add = driver.find_element(by=By.ID, value="wb-add")
         wb_add.click()
     except:
         pass
     
+    wait = WebDriverWait(driver, 10)
+    
     # Find the label that contains "text..." string
+    wait.until(EC.visibility_of_element_located((By.ID, "add_text")))
     input_text_button = driver.find_element(by=By.ID, value="add_text")
     input_text_button.click()
     
-    wait = WebDriverWait(driver, 10)
     wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "textbar_text")))
     text_area = driver.find_element(by=By.CLASS_NAME, value="textbar_text")
     
@@ -141,6 +146,8 @@ async def insert_text(driver:webdriver.Chrome, text:str):
     ok_text_button = driver.find_element(by=By.CLASS_NAME, value="ok_text")
     ok_text_button.click()
     
+    print("added text...")
+    
 def filter_non_bmp_characters(text):
     return ''.join(c for c in text if ord(c) <= 0xFFFF)
 
@@ -148,9 +155,9 @@ async def download_image(image:discord.Attachment, num_str=""):
     data = await get_data_from_url(image.url)
     extention = imghdr.what(io.BytesIO(data))
     filename = f"temp{num_str}.{extention}"
-    with open(f"img\\{filename}", "wb") as f:
+    with open(f"img/{filename}", "wb") as f:
         f.write(data)
-    return "img\\" + filename
+    return "img/" + filename
 
 async def crop_image(path:str):
     im = PIL.Image.open(path)
@@ -171,15 +178,15 @@ def getDownLoadedFileName(driver, waitTime):
     driver.execute_script("window.open()")
     # switch to new tab
     driver.switch_to.window(driver.window_handles[-1])
-    # navigate to chrome downloads
-    driver.get('chrome://downloads')
+    # navigate to firefox downloads
+    driver.get('about:downloads')
     # define the endTime
     endTime = time.time()+waitTime
     while True:
         try:
-            return driver.execute_script(
-                "return document.querySelector('downloads-manager').shadowRoot.querySelector('#downloadsList downloads-item').shadowRoot.querySelector('div#content  #file-link').text"
-            )
+            fileName = driver.execute_script("return document.querySelector('#contentAreaDownloadsView .downloadMainArea .downloadContainer description:nth-of-type(1)').value")
+            if fileName:
+                return fileName
         except Exception as e:
             print(e)
             pass

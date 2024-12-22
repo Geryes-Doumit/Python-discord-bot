@@ -15,8 +15,9 @@ from insightface.app import FaceAnalysis
 import aiohttp
 import onnxruntime
 
-MODEL_PATH = os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx'
+#MODEL_PATH = os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx'
 # MODEL_PATH = "/Users/Shared/Inswapper/inswapper_128.onnx"
+MODEL_PATH = "/app/inswapper_128.onnx"
 
 async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
     with contextlib.redirect_stdout(None):

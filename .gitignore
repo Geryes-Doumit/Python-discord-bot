@@ -182,3 +182,4 @@ googleapi/*.json
 # Other
 .tmp*
 .DS_Store
+inswapper_128.onnx
