@@ -421,7 +421,10 @@ def run_bot():
     @bot.event
     async def on_interaction(interaction:discord.Interaction):
         command:discord.app_commands.Command = interaction.command
-        command_name:str = command.name if command is not None else "(...)"
+        if command is None:
+            return
+        # else: 
+        command_name:str = command.name
         command_origin:str = ""
         if interaction.guild is not None:
             command_origin = f"the server {interaction.guild.name}"

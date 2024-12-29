@@ -13,16 +13,15 @@ import imghdr
 import insightface
 from insightface.app import FaceAnalysis
 import aiohttp
-import onnxruntime
+import onnxruntime as ort
 
-#MODEL_PATH = os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx'
+MODEL_PATH = os.environ['USERPROFILE'] + '/.insightface/models/inswapper_128/inswapper_128.onnx'
 # MODEL_PATH = "/Users/Shared/Inswapper/inswapper_128.onnx"
-MODEL_PATH = "/app/inswapper_128.onnx"
+# MODEL_PATH = "/app/inswapper_128.onnx"
 
 async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
-    with contextlib.redirect_stdout(None):
-        app = FaceAnalysis(name='buffalo_l')
-        app.prepare(ctx_id=0, det_size=(640, 640))
+    app = FaceAnalysis(name='buffalo_l')
+    app.prepare(ctx_id=0, det_size=(640, 640))
 
     data = await get_data_from_url(attachment.url)
     
@@ -57,10 +56,9 @@ async def swap_faces_hero(attachment:discord.Attachment, hero_choice:str):
 
 async def swap_faces(source:discord.Attachment, target:discord.Attachment, replace_all:bool = False,
                      discard_unswapped:bool = False):
-    with contextlib.redirect_stdout(None):
-        app = FaceAnalysis(name='buffalo_l')
-        app.prepare(ctx_id=0, det_size=(640, 640))
-
+    app = FaceAnalysis(name='buffalo_l')
+    app.prepare(ctx_id=0, det_size=(640, 640))
+    
     data = await get_data_from_url(source.url)
     
     if imghdr.what(io.BytesIO(data)) == 'gif':
@@ -176,3 +174,20 @@ async def get_data_from_url(url):
             data = await response.read()
     
     return data
+
+# only for debugging purposes
+class Test:
+    def __init__(self):
+        self.url = 'https://fps.cdnpk.net/images/home/subhome-ai.webp?w=649&h=649'
+
+if __name__ == '__main__':
+    # Test
+    import asyncio
+    
+    async def test():
+        source = Test()
+        target = Test()
+        result = await swap_faces(source, target)
+        print(result)
+    
+    asyncio.run(test())

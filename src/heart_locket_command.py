@@ -12,9 +12,9 @@ import aiohttp
 import imghdr
 import io
 
-#DL_DIRECTORY = os.environ['USERPROFILE'] + "\\Documents\\Python-discord-bot\\img\\heart_locket\\"
+DL_DIRECTORY = os.environ['USERPROFILE'] + "\\Documents\\Python-discord-bot\\img\\heart_locket\\"
 # DL_DIRECTORY = "/Users/geryes/Pictures"
-DL_DIRECTORY = "/app/img/heart_locket/"
+# DL_DIRECTORY = "/app/img/heart_locket/"
 
 async def make_heart_locket(image:discord.Attachment, text:str, image2:discord.Attachment=None, orientation:str="image-text", headless=True):
     # Set up the Selenium webdriver
@@ -72,7 +72,7 @@ async def make_heart_locket(image:discord.Attachment, text:str, image2:discord.A
         
         filename = getDownLoadedFileName(driver, 10)
         
-        path = DL_DIRECTORY + filename
+        path = "img/heart_locket/" + filename
         
     except Exception as e:
         print(e)
