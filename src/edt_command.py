@@ -149,21 +149,8 @@ def take_screenshot(critere:str, type:str, force:bool, date_str:str|None=None, h
     
 def click_next_week(day_number:int, wait:WebDriverWait, driver:webdriver.Firefox):
     next_week_date = datetime.today() + timedelta(7 - day_number)
-    next_monday_number = str(next_week_date.day)
-    next_week_number = next_week_date.strftime("%W")
-    next_month_number = int(next_week_date.strftime("%m"))
-    year = next_week_date.strftime("%Y")
-    formatted_next_monday = "0" + next_monday_number if len(next_monday_number) == 1 else next_monday_number
-    # Faire attention aux doubles espaces
-    button_text = f"S{next_week_number}  - lun.  {formatted_next_monday}  {months_french[next_month_number-1]}  {year}"
-    try:
-        next_week_button = driver.find_element(by=By.XPATH, value=f"//button[contains(text(), '{button_text}')]")
-        wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
-        print(f"Clicking on '{next_week_button.text}'")
-        next_week_button.click()
-    except Exception:
-        print("No next week button found")
-    wait.until(EC.invisibility_of_element_located((By.CLASS_NAME, loading_icon_class)))
+    next_week_date_str = next_week_date.strftime('%d/%m/%Y')
+    goto_date(next_week_date_str, wait, driver)
     
 def goto_date(date_str:str, wait:WebDriverWait, driver:webdriver.Firefox) -> bool:
     # Date format: dd/mm/yyyy
@@ -200,4 +187,4 @@ def command_details_per_server(server_id:str) -> tuple[bool, str]:
     return (True, servers[server_id]['critere'])
 
 if __name__ == "__main__": # Test
-    take_screenshot("3ir", "demain", True, "6/1/2025", False)
+    take_screenshot("3ir", "semaine", True, None, False)
