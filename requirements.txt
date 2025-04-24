@@ -23,7 +23,7 @@ exceptiongroup==1.2.2
 flatbuffers==24.3.25
 fonttools==4.54.1
 frozenlist==1.4.1
-h11==0.14.0
+h11==0.16.0
 humanfriendly==10.0
 idna==3.10
 imageio==2.36.0
